@@ -51,15 +51,25 @@ class Dashboard extends React.Component {
     super(props);
     this.state = {
       "X-Auth-Token": "gAAAAABfK64mNuoSqG-fLUqY2NXBqhALbHfYk-fLgRvMgQdh1jepcrIk44YZqbOEQb8Q_FUFZpUeaCaeo4SujJxI2FHD47FSLmHrEr4EU9fHeeZ9p4MvPZ3xtPYPqEgJ91E4Sxz6PS52JNNtKUulZXdY1cOJriBAL8yedDunofCxtvSdqL61arw", 
-      tenant_id: "ac09f439d0d941c39060b52864146c62"
+      tenant_id: "ac09f439d0d941c39060b52864146c62", 
+      role: "Teacher"
     }
   }
 
   render() {
+    let teacherCreateMenu;
+    let teacherImageMenu;
+    if (this.state.role != "Student") {
+      teacherCreateMenu = <CreateStack token={this.state["X-Auth-Token"]} tenant_id={this.state.tenant_id}/>;
+      teacherImageMenu = <CreateImage token={this.state["X-Auth-Token"]} tenant_id={this.state.tenant_id}/>;
+    } else {
+      teacherCreateMenu = null;
+      teacherImageMenu = null;
+    }
     return (
       <div>
-        <CreateStack token={this.state["X-Auth-Token"]} tenant_id={this.state.tenant_id}/><br/>
-        <CreateImage token={this.state["X-Auth-Token"]} tenant_id={this.state.tenant_id}/><br/>
+        {teacherCreateMenu}<br/>
+        {teacherImageMenu}<br/>
         <HeatApi token={this.state["X-Auth-Token"]} tenant_id={this.state.tenant_id} 
         cardCategory={this.props.classes.cardCategory} 
         cardTitle={this.props.classes.cardTitle} 

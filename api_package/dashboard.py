@@ -45,8 +45,9 @@ def createStack():
     ram = requestBody.get("ram", 2048)
     disk = requestBody.get("disk", 24)
     stack_name = requestBody.get("stack_name", get_random_string(16))
+    personeel = requestBody.get("personeel", 0)
 
-    result = api.createInstance(X_AUTH_TOKEN, tenant_id, stack_name, image, vcpus, ram, disk)
+    result = api.createInstance(X_AUTH_TOKEN, tenant_id, stack_name, image, vcpus, ram, disk, int(personeel))
     print(X_AUTH_TOKEN, tenant_id, stack_name, image, vcpus, ram, disk)
     return json.dumps(result)
 
@@ -116,7 +117,7 @@ def createImage():
     return json.dumps(result)
 
 @app.route('/api/stack/console', methods=['POST'])
-def getResources():
+def getInstanceConsole():
     requestHeader = request.headers
 
     X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
@@ -125,11 +126,12 @@ def getResources():
     tenant_id = requestHeader.get("tenant_id", None)
 
     resources = api.getStackResources(X_AUTH_TOKEN, tenant_id, stack_name, stack_id)
-    instance = api.getInstanceInfo(resources)
+    instance_list = api.getInstanceInfo(resources)
+    instance = instance_list[0]
     console_info = api.getInstanceConsole(X_AUTH_TOKEN, instance.get("physical_resource_id", ""))
 
     return json.dumps(console_info)
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=5000)
+    app.run('0.0.0.0', port=16384)
 

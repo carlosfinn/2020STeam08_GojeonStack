@@ -1,4 +1,4 @@
-import requests, json
+import requests, json, pymysql
 
 localhost = "http://164.125.70.19"
 
@@ -16,48 +16,74 @@ def getFlavors(X_AUTH_TOKEN: str):
 
     return rBody.get('flavors', None)
 
-def createInstance(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, image: str, vcpus: int, ram: int, disk: int):
+def createInstance(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, image: str, vcpus: int, ram: int, disk: int, personeel: int):
     url = localhost + "/heat-api/v1/" + tenant_id + "/stacks"
+
     rHeaders = {
         'Content-Type': 'application/json',
         "X-Auth-Token": X_AUTH_TOKEN
     }
 
+    flavor_name = stack_name + "_flavor"
     rBody = {
         "stack_name": stack_name,
         "template": {
             "heat_template_version": "2015-04-30",
             "resources": {
-                (stack_name + "_flavor"): {
+                (flavor_name): {
                     "type": "OS::Nova::Flavor",
                     "properties": {
                         "ram": ram, "vcpus": vcpus, "disk": disk
-                    }
-                }, (stack_name + "_volume"): {
-                    "type": "OS::Cinder::Volume",
-                    "properties": {
-                        "size": disk, "image": image, "volume_type": "lvmdriver-1"
-                    }
-                }, (stack_name + "_server"): {
-                    "type": "OS::Nova::Server",
-                    "properties": {
-                        "flavor": {"get_resource": (stack_name + "_flavor")},
-                        "networks": [{"network": "public"}], "block_device_mapping": [{
-                            "device_name": "vda",
-                            "volume_id": { "get_resource": (stack_name + "_volume") },
-                            "delete_on_termination": False
-                        }]
                     }
                 }
             }
         }
     }
 
+    for x in range(personeel):
+        volume_name = stack_name + "_volume" + "%2d" % (x)
+        instance_name = stack_name + "_server" + "%2d" % (x)
+        
+        rBody["template"]["resources"].update({
+            (volume_name): {
+                "type": "OS::Cinder::Volume",
+                "properties": {
+                    "size": disk, "image": image, "volume_type": "lvmdriver-1"
+                }
+            }, (instance_name): {
+                "type": "OS::Nova::Server",
+                "properties": {
+                    "flavor": { "get_resource": flavor_name },
+                    "networks": [{"network": "public"}], "block_device_mapping": [{
+                        "device_name": "vda",
+                        "volume_id": { "get_resource": volume_name },
+                        "delete_on_termination": False
+                    }]
+                }
+            }
+        })
+
     print(json.dumps(rBody))
     requestResult = requests.post(url, headers=rHeaders, data=json.dumps(rBody))
     requestResult.raise_for_status()
 
     return requestResult.json()
+
+def takeClass(stack_id: str):
+    pass
+
+def personeelCount(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_id: str):
+    url = localhost + "/heat-api/v1/" + tenant_id + "/stacks/" + stack_name + "/" + stack_id  + "/template"
+
+    rHeaders = {
+        'Content-Type': 'application/json',
+        "X-Auth-Token": X_AUTH_TOKEN
+    }
+
+    requestResult = requests.get(url, headers=rHeaders)
+    requestResult.raise_for_status()
+
+    resultJson = requestResult.json()
 
 def getStackList(X_AUTH_TOKEN: str, tenant_id: str):
     rHeaders = {
@@ -93,6 +119,14 @@ def getImageList(X_AUTH_TOKEN: str):
     return imageInfo
 
 def deleteStack(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_id: str):
+    lecture_sign_up_list = pymysql.connect(
+        user='root',
+        passwd='8nkujc3rf',
+        host='localhost',
+        db='lecture_sign_up_list',
+        charset='utf8'
+    )
+
     rHeaders = {
         'Content-Type': 'application/json',
         "X-Auth-Token": X_AUTH_TOKEN
@@ -101,6 +135,10 @@ def deleteStack(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_id: st
     url = localhost + "/heat-api/v1/" + tenant_id + "/stacks/" + stack_name + "/" + stack_id
     requestResult = requests.delete(url, headers=rHeaders)
     requestResult.raise_for_status()
+
+    cursor = lecture_sign_up_list.cursor(pymysql.cursors.DictCursor)
+    sql_query = '''delete * from sign_up_list where lecture_id = '%s';''' % (stack_id)
+    cursor.execute(sql_query)
 
     return { "result_code": requestResult.status_code }
 
@@ -152,6 +190,8 @@ def uploadImage(X_AUTH_TOKEN: str, fstream, name: str, disk_format: str, min_dis
 
     return { "result_code": requestResult.status_code }
 
+## stack_resource 및 instance의 정보 추출 관련 부분
+
 def getStackResources(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_id: str):
     rHeaders = {
         'Content-Type': 'application/json',
@@ -165,11 +205,14 @@ def getStackResources(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_
 
     return resources_info.get("resources", [])
 
-def getInstanceInfo(resources: list) -> dict:
+def getInstanceInfo(resources: list) -> list:
+    instance_list = list()
+
     for resource in resources:
         if resource.get("resource_type", "") == "OS::Nova::Server":
-            return resource
-    return {}
+            instance_list.append(resource)
+    
+    return instance_list
 
 
 def getInstanceConsole(X_AUTH_TOKEN: str, instance_id: str):
@@ -191,3 +234,15 @@ def getInstanceConsole(X_AUTH_TOKEN: str, instance_id: str):
 
     return console_info.get("console", {})
 
+def getCurrentStudent(stack_id: str):
+    lecture_sign_up_list = pymysql.connect(
+        user='root',
+        passwd='8nkujc3rf',
+        host='localhost',
+        db='lecture_sign_up_list',
+        charset='utf8'
+    )
+
+    cursor = lecture_sign_up_list.cursor(pymysql.cursors.DictCursor)
+    query = '''SELECT COUNT(*) as person FROM sign_up_list where lecture_id = '%s';''' % (stack_id)
+    cursor.execute(query)

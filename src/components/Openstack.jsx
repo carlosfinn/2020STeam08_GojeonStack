@@ -37,7 +37,8 @@ class StackInfo extends React.Component {
     this.state = {
       consoleData: {}, 
       "X-Auth-Token": this.props.token, 
-      tenant_id: this.props.tenant_id
+      tenant_id: this.props.tenant_id, 
+      role: this.props.role
     }
 
     this.getConsoleLink.bind(this);
@@ -45,7 +46,7 @@ class StackInfo extends React.Component {
   }
 
   getConsoleLink() {
-    const url = "http://localhost:5000/api/stack/console";
+    const url = "http://164.125.70.19:16384/api/stack/console";
     const request = {
       method: "POST", 
       headers: {
@@ -62,7 +63,7 @@ class StackInfo extends React.Component {
   }
 
   DeleteStack() {
-    const url = "http://localhost:5000/api/stack/delete";
+    const url = "http://164.125.70.19:16384/api/stack/delete";
     console.log(this.props.stack_id);
     console.log(this.props.stack_name);
 
@@ -93,6 +94,17 @@ class StackInfo extends React.Component {
   }
 
   render() {
+    const isStudent = this.props.role == "Student";
+    let DeleteButton;
+    let console;
+    let takeLectureButton;
+
+    if (!isStudent) DeleteButton = <Button variant="contained" color="primary" onClick={this.DeleteStack.bind(this)}>DELETE</Button>;
+    else DeleteButton = <br/>;
+
+    if (this.props.stack_status == "CREATE_COMPLETE") console = <a href={this.state.consoleData.url}>Go to console</a>;
+    else console = null;
+
     return (
       <GridContainer name={this.props.key}>
       <GridItem xs={12} sm={6} md={3}>
@@ -108,10 +120,10 @@ class StackInfo extends React.Component {
         </CardHeader>
         <CardFooter>
           <div className={this.props.stats}>
-              <Button variant="contained" color="primary" onClick={this.DeleteStack.bind(this)}>DELETE</Button><br></br>
+            {DeleteButton}<br/>
           </div>
           <div className={this.props.stats}>
-          <a href={this.state.consoleData.url}>Go to console</a>
+          {console}
           </div>
         </CardFooter>
       </Card>
@@ -175,7 +187,8 @@ export default class HeatApi extends React.Component {
     this.state = {
       data: [], 
       "X-Auth-Token": this.props.token, 
-      tenant_id: this.props.tenant_id
+      tenant_id: this.props.tenant_id, 
+      role: this.props.role
     }
     this.updateInfo();
     this.interval = setInterval(() => {
@@ -184,7 +197,7 @@ export default class HeatApi extends React.Component {
   }
 
   getStackInfo = async() => {
-    fetch("http://localhost:5000/api/stack/list", {
+    fetch("http://164.125.70.19:16384/api/stack/list", {
       headers: {
         "X-Auth-Token": this.state["X-Auth-Token"], 
         "tenant_id": this.state.tenant_id
@@ -210,7 +223,7 @@ export default class HeatApi extends React.Component {
           return (
               <StackInfo cardCategory={this.props.cardCategory} cardTitle={this.props.cardTitle} stats={this.props.stats}
               stack_name={stack.stack_name} creation_time={stack.creation_time} stack_status={stack.stack_status} stack_owner={stack.stack_owner}
-              stack_id={stack.id} token={this.state["X-Auth-Token"]} tenant_id={this.state.tenant_id}
+              stack_id={stack.id} token={this.state["X-Auth-Token"]} tenant_id={this.state.tenant_id} role={this.state.role}
               />
           );
         })}

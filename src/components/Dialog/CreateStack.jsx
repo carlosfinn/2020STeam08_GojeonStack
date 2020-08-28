@@ -24,6 +24,7 @@ class CreateStack extends React.Component {
             vcpus: 0, 
             ram: 0, 
             disk: 0, 
+            personeel: 1, 
             cpu_error: false, 
             ram_error: false, 
             disk_error: false, 
@@ -50,7 +51,7 @@ class CreateStack extends React.Component {
     }
 
     getImageInfo = async() => {
-        await fetch("http://localhost:5000/api/image/list", {
+        await fetch("http://164.125.70.19:16384/api/image/list", {
             method: 'GET', 
             headers: {
                 "X-Auth-Token": "gAAAAABfK64mNuoSqG-fLUqY2NXBqhALbHfYk-fLgRvMgQdh1jepcrIk44YZqbOEQb8Q_FUFZpUeaCaeo4SujJxI2FHD47FSLmHrEr4EU9fHeeZ9p4MvPZ3xtPYPqEgJ91E4Sxz6PS52JNNtKUulZXdY1cOJriBAL8yedDunofCxtvSdqL61arw"
@@ -95,13 +96,14 @@ class CreateStack extends React.Component {
     }
 
     createStack() {
-        const url = 'http://localhost:5000/api/stack/create';
+        const url = 'http://164.125.70.19:16384/api/stack/create';
         const requestBody = {
             stack_name: this.state.stack_name, 
             vcpus: this.state.vcpus, 
             ram: this.state.ram, 
             disk: this.state.disk, 
-            image: this.state.image
+            image: this.state.image, 
+            personeel: this.state.personeel
         }
         const request = {
             method: 'POST', 
@@ -119,20 +121,23 @@ class CreateStack extends React.Component {
     handleFormSubmit(e) {
         e.preventDefault();
         if (!this.state.disk_error && !this.state.ram_error && !this.state.cpu_error && (this.state.image != "")) {
-            this.createStack();
-            this.setState({
-                stack_name: '', 
-                vcpus: 0, 
-                ram: 0, 
-                disk: 0, 
-                cpu_error: false, 
-                ram_error: false, 
-                disk_error: false, 
-                image: '', 
-                image_list: [],
-                image_constraints: {}, 
-                open: false
-            });
+            if (this.state.personeel > 0) {
+                this.createStack();
+                this.setState({
+                    stack_name: '', 
+                    vcpus: 0, 
+                    ram: 0, 
+                    disk: 0, 
+                    personeel: 1, 
+                    cpu_error: false, 
+                    ram_error: false, 
+                    disk_error: false, 
+                    image: '', 
+                    image_list: [],
+                    image_constraints: {}, 
+                    open: false
+                });
+            } else alert("수강자의 수는 반드시 한 명 이상으로 설정하십시오.");
         } else alert("이미지에서 요구하는 디스크 혹은 RAM의 용량을 충족하지 않습니다.");
     }
     
@@ -142,6 +147,7 @@ class CreateStack extends React.Component {
             vcpus: 0, 
             ram: 0, 
             disk: 0, 
+            personeel: 1, 
             cpu_error: false, 
             ram_error: false, 
             disk_error: false, 
@@ -166,6 +172,7 @@ class CreateStack extends React.Component {
                         <TextField label="vcpus" type="number" name="vcpus" value={this.state.vcpus} style={{width:240}} required error={this.state.cpu_error && (this.state.image != "")} onChange={this.handleValueChange} margin="normal"/><br/>
                         <TextField label="ram (MB)" type="number" name="ram" value={this.state.ram} style={{width:240}} required error={this.state.ram_error} onChange={this.handleValueChange} margin="normal"/><br/>
                         <TextField label="disk (GB)" type="number" name="disk" value={this.state.disk} style={{width:240}} required error={this.state.disk_error} onChange={this.handleValueChange} margin="normal"/><br/>
+                        <TextField label="personeel" type="number" name="personeel" value={this.state.personeel} style={{width:240}} required error={this.state.personeel<=0} onChange={this.handleValueChange} margin="normal"/><br/>
                         <TextField label="image" type="text" select onChange={this.handleValueChange} style={{width:240}} required name="image" SelectProps={{
                                 MenuProps: {
                                   className: classes.menu,

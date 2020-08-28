@@ -52,16 +52,17 @@ class CreateImage extends React.Component {
     }
 
     createImage() {
-        const url = 'http://localhost:5000/api/image/create';
+        const url = 'http://164.125.70.19:5000/api/image/create';
         const test = this.state;
 
         var reader = new FileReader();
         if (document.getElementById("image_file")) reader.readAsBinaryString(document.getElementById("image_file").files[0]);
         reader.onload = function(e) {
+            const token = test["X-Auth-Token"];
             const request = {
                 method: 'PUT', 
                 headers: {
-                    "X-Auth-Token": this.state["X-Auth-Token"], 
+                    "X-Auth-Token": token,  
                     "name": test.image_name, 
                     "min_ram": test.min_ram, 
                     "min_disk": test.min_disk
@@ -69,8 +70,12 @@ class CreateImage extends React.Component {
                 body: reader.result
             };
     
-            fetch(url, request);
-            alert("Image has been updated");
+            fetch(url, request).then((response) => {
+                if (response.status <= 210) alert("Image has been updated");
+                else {
+                    alert("Image updating has been canceled by some reasons");
+                }
+            });
         }
     }
 
