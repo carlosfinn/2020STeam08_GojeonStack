@@ -69,22 +69,6 @@ def createInstance(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, image: st
 
     return requestResult.json()
 
-def takeClass(stack_id: str):
-    pass
-
-def personeelCount(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_id: str):
-    url = localhost + "/heat-api/v1/" + tenant_id + "/stacks/" + stack_name + "/" + stack_id  + "/template"
-
-    rHeaders = {
-        'Content-Type': 'application/json',
-        "X-Auth-Token": X_AUTH_TOKEN
-    }
-
-    requestResult = requests.get(url, headers=rHeaders)
-    requestResult.raise_for_status()
-
-    resultJson = requestResult.json()
-
 def getStackList(X_AUTH_TOKEN: str, tenant_id: str):
     rHeaders = {
         'Content-Type': 'application/json',
@@ -246,3 +230,6 @@ def getCurrentStudent(stack_id: str):
     cursor = lecture_sign_up_list.cursor(pymysql.cursors.DictCursor)
     query = '''SELECT COUNT(*) as person FROM sign_up_list where lecture_id = '%s';''' % (stack_id)
     cursor.execute(query)
+
+    result = cursor.fetchall()
+    return result[0]
