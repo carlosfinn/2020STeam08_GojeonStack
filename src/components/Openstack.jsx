@@ -38,10 +38,11 @@ class StackInfo extends React.Component {
       consoleData: {}, 
       "X-Auth-Token": this.props.token, 
       tenant_id: this.props.tenant_id, 
-      role: this.props.role, 
-      enrolleddata: {}, 
-      student_id: this.props.student_id
+      role: this.props.role
     }
+
+    this.getConsoleLink.bind(this);
+    this.getConsoleLink();
   }
 
   getConsoleLink() {
@@ -52,8 +53,7 @@ class StackInfo extends React.Component {
         "X-Auth-Token": this.state["X-Auth-Token"], 
         "tenant_id": this.state.tenant_id, 
         "stack_id": this.props.stack_id, 
-        "stack_name": this.props.stack_name, 
-        "student_id": this.state.student_id
+        "stack_name": this.props.stack_name
       }
     }
 
@@ -96,30 +96,14 @@ class StackInfo extends React.Component {
   render() {
     const isStudent = this.props.role == "Student";
     let DeleteButton;
-    let LectureConsole;
+    let console;
+    let takeLectureButton;
 
     if (!isStudent) DeleteButton = <Button variant="contained" color="primary" onClick={this.DeleteStack.bind(this)}>DELETE</Button>;
     else DeleteButton = <br/>;
 
-    if (this.props.role == "Student") {
-      const check_url = "https://164.125.70.19:16384/api/stack/enrollcheck";
-      fetch(check_url, {
-        method: 'GET', 
-        headers: {
-          "stack_id": this.state.stack_id, 
-          "student_id": this.state.student_id
-        }
-      }).then((res) => res.json()).then((json) => this.setState({
-        enrolleddata: json
-      }));
-
-      if (!this.state.enrolled) LectureConsole = <Button variant="contained" color="primary" onClick={this.getConsoleLink.bind(this)}>Take Lecture</Button>;
-      else {
-        this.getConsoleLink.bind(this);
-        this.getConsoleLink();
-        LectureConsole = <a href={this.state.consoleData.url}>Go to console</a>;
-      } 
-    } else LectureConsole = null;
+    if (this.props.stack_status == "CREATE_COMPLETE") console = <a href={this.state.consoleData.url}>Go to console</a>;
+    else console = null;
 
     return (
       <GridContainer name={this.props.key}>
@@ -136,7 +120,7 @@ class StackInfo extends React.Component {
         </CardHeader>
         <CardFooter>
           <div className={this.props.stats}>
-            {LectureConsole}<br/>
+            {DeleteButton}<br/>
           </div>
           <div className={this.props.stats}>
           {console}
@@ -204,8 +188,7 @@ export default class HeatApi extends React.Component {
       data: [], 
       "X-Auth-Token": this.props.token, 
       tenant_id: this.props.tenant_id, 
-      role: this.props.role, 
-      student_id: this.props.student_id
+      role: this.props.role
     }
     this.updateInfo();
     this.interval = setInterval(() => {
@@ -215,16 +198,13 @@ export default class HeatApi extends React.Component {
 
   getStackInfo = async() => {
     fetch("http://164.125.70.19:16384/api/stack/list", {
-      method: "GET", 
       headers: {
         "X-Auth-Token": this.state["X-Auth-Token"], 
         "tenant_id": this.state.tenant_id
       }
-    }).then((res) => res.json()).then((json) => {
-      this.setState({
-        data: json
-      });
-    })
+    }).then((res) => res.json()).then((json) => this.setState({
+          data: json
+    }))
   }
 
   updateInfo = async() => {
@@ -243,7 +223,7 @@ export default class HeatApi extends React.Component {
           return (
               <StackInfo cardCategory={this.props.cardCategory} cardTitle={this.props.cardTitle} stats={this.props.stats}
               stack_name={stack.stack_name} creation_time={stack.creation_time} stack_status={stack.stack_status} stack_owner={stack.stack_owner}
-              stack_id={stack.id} token={this.state["X-Auth-Token"]} tenant_id={this.state.tenant_id} role={this.state.role} student_id = {this.state.student_id}
+              stack_id={stack.id} token={this.state["X-Auth-Token"]} tenant_id={this.state.tenant_id} role={this.state.role}
               />
           );
         })}

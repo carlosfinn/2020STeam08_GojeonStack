@@ -73,7 +73,6 @@ def listStack():
     tenant_id = requestHeader.get("tenant_id", None)
 
     result = api.getStackList(X_AUTH_TOKEN, tenant_id)
-    print(result)
 
     return json.dumps(result)
 
@@ -126,34 +125,12 @@ def getInstanceConsole():
     stack_id = requestHeader.get("stack_id", None)
     tenant_id = requestHeader.get("tenant_id", None)
 
-    instance_list = api.getInstanceInfo(X_AUTH_TOKEN, tenant_id, stack_name, stack_id)
+    resources = api.getStackResources(X_AUTH_TOKEN, tenant_id, stack_name, stack_id)
+    instance_list = api.getInstanceInfo(resources)
     instance = instance_list[0]
-    console_info = api.getInstanceConsole(X_AUTH_TOKEN, instance.get("physical_resource_id", None))
+    console_info = api.getInstanceConsole(X_AUTH_TOKEN, instance.get("physical_resource_id", ""))
 
     return json.dumps(console_info)
-
-@app.route('/api/stack/enrollcheck', methods=['GET'])
-def getEnrolledInformation():
-    requestHeader = request.headers
-
-    stack_id = requestHeader.get("stack_id", None)
-    student_id = requestHeader.get("student_id", None)
-    info = api.getEnrolledInfo(student_id, stack_id)
-
-    return json.dumps({"enrolled": info != None})
-
-@app.route('/api/stack/enrollconsole', methods=['POST'])
-def enroll():
-    requestHeader = request.headers
-
-    X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
-    stack_name = requestHeader.get("stack_name", None)
-    stack_id = requestHeader.get("stack_id", None)
-    tenant_id = requestHeader.get("tenant_id", None)
-    student_id = requestHeader.get("student_id", None)
-
-    return json.dumps(api.enrollStudent(X_AUTH_TOKEN, tenant_id, stack_name, stack_id, student_id))
-
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=16384)
