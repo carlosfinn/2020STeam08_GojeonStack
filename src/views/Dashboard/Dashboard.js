@@ -53,7 +53,7 @@ class Dashboard extends React.Component {
       "X-Auth-Token": "gAAAAABfK64mNuoSqG-fLUqY2NXBqhALbHfYk-fLgRvMgQdh1jepcrIk44YZqbOEQb8Q_FUFZpUeaCaeo4SujJxI2FHD47FSLmHrEr4EU9fHeeZ9p4MvPZ3xtPYPqEgJ91E4Sxz6PS52JNNtKUulZXdY1cOJriBAL8yedDunofCxtvSdqL61arw", 
       tenant_id: "ac09f439d0d941c39060b52864146c62", 
       role: "Student", 
-      student_id: "carlos"
+      student_id: "brronco"
     }
   }
 

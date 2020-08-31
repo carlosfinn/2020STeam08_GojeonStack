@@ -41,7 +41,8 @@ class StackInfo extends React.Component {
       role: this.props.role, 
       student_id: this.props.student_id, 
       enrolleddata: {}, 
-      studentconsole: {}
+      studentconsole: {}, 
+      countstate: {}
     }
 
     this.getConsoleLink.bind(this);
@@ -67,6 +68,7 @@ class StackInfo extends React.Component {
 
   enrollStudent() {
     const url = "http://164.125.70.19:16384/api/stack/enrollconsole";
+    const check_url = "http://164.125.70.19:16384/api/stack/getlectureoverstate";
     const request = {
       method: "POST", 
       headers: {
@@ -78,9 +80,22 @@ class StackInfo extends React.Component {
       }
     }
 
-    fetch(url, request).then((res) => res.json()).then((json) => this.setState({
-      studentconsole: json
+    fetch(check_url, {
+      method: "GET", 
+      headers: {
+        "X-Auth-Token": this.state["X-Auth-Token"], 
+        "tenant_id": this.state.tenant_id, 
+        "stack_id": this.props.stack_id, 
+        "stack_name": this.props.stack_name
+      }
+    }).then((res) => res.json()).then((json) => this.setState({
+      countstate: json
     }))
+
+    if (this.state.countstate.isover) alert("정원 초과로 더 이상 수강신청 불가능");
+    else fetch(url, request).then((res) => res.json()).then((json) => this.setState({
+      studentconsole: json
+    }));
   }
 
   DeleteStack() {

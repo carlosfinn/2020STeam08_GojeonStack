@@ -154,6 +154,18 @@ def enroll():
 
     return json.dumps(api.enrollStudent(X_AUTH_TOKEN, tenant_id, stack_name, stack_id, student_id))
 
+@app.route('/api/stack/getlectureoverstate', methods=['GET'])
+def islectureover():
+    requestHeader = request.headers
+
+    X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
+    stack_name = requestHeader.get("stack_name", None)
+    stack_id = requestHeader.get("stack_id", None)
+    tenant_id = requestHeader.get("tenant_id", None)
+
+    current = api.getCurrentStudent(stack_id).get("person", 0)
+
+    return json.dumps({"isover": len(api.getInstanceInfo(X_AUTH_TOKEN, tenant_id, stack_name, stack_id)) >= current})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=16384)
