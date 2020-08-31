@@ -94,14 +94,14 @@ class StackInfo extends React.Component {
   }
 
   render() {
-    const isStudent = this.props.role == "Student";
+    const isStudent = this.state.role == "Student";
     let DeleteButton;
     let LectureConsole;
 
     if (!isStudent) DeleteButton = <Button variant="contained" color="primary" onClick={this.DeleteStack.bind(this)}>DELETE</Button>;
     else DeleteButton = <br/>;
 
-    if (this.props.role == "Student") {
+    if (this.state.role == "Student") {
       const check_url = "https://164.125.70.19:16384/api/stack/enrollcheck";
       fetch(check_url, {
         method: 'GET', 
@@ -214,17 +214,18 @@ export default class HeatApi extends React.Component {
   }
 
   getStackInfo = async() => {
-    fetch("http://164.125.70.19:16384/api/stack/list", {
+    const request = {
       method: "GET", 
       headers: {
         "X-Auth-Token": this.state["X-Auth-Token"], 
         "tenant_id": this.state.tenant_id
       }
-    }).then((res) => res.json()).then((json) => {
+    }
+    fetch("http://164.125.70.19:16384/api/stack/list", request).then((res) => res.json()).then((json) => 
       this.setState({
         data: json
-      });
-    })
+      })
+    );
   }
 
   updateInfo = async() => {

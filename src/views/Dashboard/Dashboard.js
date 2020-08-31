@@ -52,7 +52,8 @@ class Dashboard extends React.Component {
     this.state = {
       "X-Auth-Token": "gAAAAABfK64mNuoSqG-fLUqY2NXBqhALbHfYk-fLgRvMgQdh1jepcrIk44YZqbOEQb8Q_FUFZpUeaCaeo4SujJxI2FHD47FSLmHrEr4EU9fHeeZ9p4MvPZ3xtPYPqEgJ91E4Sxz6PS52JNNtKUulZXdY1cOJriBAL8yedDunofCxtvSdqL61arw", 
       tenant_id: "ac09f439d0d941c39060b52864146c62", 
-      role: "Teacher"
+      role: "Teacher", 
+      student_id: "carlos"
     }
   }
 
@@ -73,7 +74,7 @@ class Dashboard extends React.Component {
         <HeatApi token={this.state["X-Auth-Token"]} tenant_id={this.state.tenant_id} 
         cardCategory={this.props.classes.cardCategory} 
         cardTitle={this.props.classes.cardTitle} 
-        stats={this.props.classes.stats}/>
+        stats={this.props.classes.stats} student_id={this.state.student_id}/>
         <GridContainer>
           <GridItem xs={12} sm={12} md={4}>
             <Card chart>
