@@ -1,6 +1,6 @@
 from flask import Flask, request, make_response
 from flask_cors import CORS
-import json, os, api
+import json, os, api, auth
 import random, string, time
 
 def get_random_string(length):
@@ -14,12 +14,106 @@ app = Flask(__name__)
 cors = CORS(
     app, resources={
         r"/*": {"origin": "*"},
+        r"/login/*": {"origin": "*"},
+        r"/register/*": {"origin": "*"},
         r"/api/*": {"origin": "*"},
         r"/api/vm/*": {"origin": "*"},
         r"/api/stack/*": {"origin": "*"},
         r"/api/image/*": {"origin": "*"}
     }
 )
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    data = request.get_json()
+    id = data['id']
+    pw = data['pw']
+    # id = 'tacher_user'
+    # pw = 'test'
+    token = auth.getToken(id,pw)
+    if token is None:
+        jsonResult = {
+            'loginResult': None
+        }
+        resJson = json.dumps(jsonResult)
+        return resJson
+    
+    projectName = auth.getProjectId(token)
+    if projectName == 'studentproject':
+        jsonResult = {
+            'token': token,
+            'user': 'student',
+            'loginResult': True
+        }
+    if projectName == 'teacherproject':
+        jsonResult = {
+            'token': token,
+            'user': 'teacher',
+            'loginResult': True
+        }
+    
+    resJson = json.dumps(jsonResult)
+    return resJson
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    data = request.get_json()
+    role = data['role']
+    name = data['name']
+    pw = data['pw']
+    email = data['email']
+    # role = 'student'
+    # name = 'registertest_student'
+    # pw = 'test'
+    # email = 'abc@example.com'
+
+    token = auth.getToken('admin', '8nkujc3rf')
+
+    if role == 'student':
+        projectId = '620784eac27545439a2e5239a4fe8182'
+        user = auth.createUser(token,projectId, name, pw, email)
+        if user == 'Conflict':
+            jsonResult = {
+                'registerResult': False,
+                'userID': user
+            }
+            resJson = json.dumps(jsonResult)
+            return resJson
+
+        role_id = 'c75b527ef73f4867b3b098c8924a0ea3' #admin role
+        auth.assignRoletoUser(token, projectId, user, role_id)
+        jsonResult = {
+            'registerResult': True,
+            'name': name,
+            'password': pw,
+            'user': 'student',
+            'userID': user
+        }
+
+    if role == 'teacher':
+        projectId = '6d9469c8d3624dbb8677d07ac743e26e'
+        user = auth.createUser(token, projectId, name, pw, email)
+        if user == 'Conflict':
+            jsonResult = {
+                'registerResult': False,
+                'userID': user
+            }
+            resJson = json.dumps(jsonResult)
+            return resJson
+        
+        role_id = 'c75b527ef73f4867b3b098c8924a0ea3' #admin role
+        auth.assignRoletoUser(token, projectId, user, role_id)
+        jsonResult = {
+            'registerResult': True,
+            'name': name,
+            'password': pw,
+            'user': 'teacher',
+            'userID': user
+        }
+
+    resJson = json.dumps(jsonResult)
+    return resJson
 
 @app.route('/api/flavors', methods=['GET'])
 def getFlavor():

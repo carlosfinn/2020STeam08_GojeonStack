@@ -22,6 +22,7 @@ import { Router, Route, Switch, Redirect } from "react-router-dom";
 
 // core components
 import Admin from "layouts/Admin.js";
+import RegisterPage from "views/Register/RegisterPage"
 
 import "assets/css/material-dashboard-react.css?v=1.9.0";
 
@@ -31,7 +32,8 @@ ReactDOM.render(
   <Router history={hist}>
     <Switch>
       <Route path="/admin" component={Admin} />
-      <Redirect from="/" to="/admin/dashboard" />
+      <Route path="/admin/register" component={RegisterPage}  />
+      <Redirect from="/" to="/admin/login" />
     </Switch>
   </Router>,
   document.getElementById("root")
