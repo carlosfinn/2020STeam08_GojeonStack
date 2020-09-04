@@ -56,6 +56,8 @@ class Dashboard extends React.Component {
       tenant_id: "ac09f439d0d941c39060b52864146c62", 
       role: "Teacher", 
       student_id: "baldi"
+
+     
     }
     console.log(this.state["X-Auth-Token"]);
   }

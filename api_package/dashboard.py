@@ -1,6 +1,6 @@
 from flask import Flask, request, make_response
 from flask_cors import CORS
-import json, os, api, auth
+import json, os, api
 import random, string, time
 
 def get_random_string(length):
@@ -14,8 +14,6 @@ app = Flask(__name__)
 cors = CORS(
     app, resources={
         r"/*": {"origin": "*"},
-        r"/login/*": {"origin": "*"},
-        r"/register/*": {"origin": "*"},
         r"/api/*": {"origin": "*"},
         r"/api/vm/*": {"origin": "*"},
         r"/api/stack/*": {"origin": "*"},
@@ -23,6 +21,7 @@ cors = CORS(
     }
 )
 
+<<<<<<< HEAD
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     data = request.get_json()
@@ -120,6 +119,8 @@ def register():
     resJson = json.dumps(jsonResult)
     return resJson
 
+=======
+>>>>>>> parent of 374042c... Auth 추가
 @app.route('/api/flavors', methods=['GET'])
 def getFlavor():
     requestHeader = request.headers
@@ -253,18 +254,6 @@ def enroll():
 
     return json.dumps(api.enrollStudent(X_AUTH_TOKEN, tenant_id, stack_name, stack_id, student_id))
 
-@app.route('/api/stack/getlectureoverstate', methods=['GET'])
-def islectureover():
-    requestHeader = request.headers
-
-    X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
-    stack_name = requestHeader.get("stack_name", None)
-    stack_id = requestHeader.get("stack_id", None)
-    tenant_id = requestHeader.get("tenant_id", None)
-
-    current = api.getCurrentStudent(stack_id).get("person", 0)
-
-    return json.dumps({"isover": len(api.getInstanceInfo(X_AUTH_TOKEN, tenant_id, stack_name, stack_id)) >= current})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000)

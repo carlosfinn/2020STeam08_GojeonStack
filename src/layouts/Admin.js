@@ -34,7 +34,11 @@ const switchRoutes = (
       }
       return null;
     })}
+<<<<<<< HEAD
     <Redirect  to="/admin/dashboard" />
+=======
+    <Redirect from="/admin" to="/admin/dashboard" />
+>>>>>>> parent of 374042c... Auth 추가
   </Switch>
 );
 
