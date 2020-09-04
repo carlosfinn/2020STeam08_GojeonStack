@@ -152,40 +152,12 @@ def deleteImage(X_AUTH_TOKEN: str, image_id):
 
     return {}
 
-def uploadImage(X_AUTH_TOKEN: str, fstream, name: str, disk_format: str, min_disk: int, min_ram: int):
-    rHeaders = {
-        'Content-Type': 'application/json',
-        "X-Auth-Token": X_AUTH_TOKEN
-    }
-    rBody = {
-        "disk_format": disk_format,
-        "min_disk": min_disk,
-        "min_ram": min_ram,
-        "name": name
-    }
+def searchforImage(X_AUTH_TOKEN: str, name: str):
+    imagelist = getImageList(X_AUTH_TOKEN)
 
-    print(rHeaders, "\n\n", rBody, "\n\n")
+    for image in imagelist:
+        if image.get("name", '') == name: return image.get("id", '')
 
-    url = localhost + "/image/v2/images"
-    requestResult = requests.post(url, headers=rHeaders, data=json.dumps(rBody))
-    requestResult.raise_for_status()
-
-    image_info = requestResult.json()
-    print(f"\033[94mFinished: You finished the first process. Continue?\033[0m")
-
-    image_id = image_info.get("id", None)
-    url = url + '/' + image_id + '/file'
-
-    rHeaders = {
-        'Content-Type': 'application/octet-stream',
-        "X-Auth-Token": X_AUTH_TOKEN
-    }
-
-    requestResult = requests.put(url, headers=rHeaders, data=fstream)
-    requestResult.raise_for_status()
-    print(f"\033[94mFinished: You finished the second process. Continue?\033[0m")
-
-    return { "result_code": requestResult.status_code }
 
 ## stack_resource 및 instance의 정보 추출 관련 부분
 

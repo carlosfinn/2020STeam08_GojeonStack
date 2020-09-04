@@ -30,7 +30,6 @@ import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
 import HeatApi from "components/Openstack.jsx";
 import CreateStack from "components/Dialog/CreateStack.jsx";
-import CreateImage from "components/Dialog/CreateImage.jsx";
 import withStyles from "@material-ui/core/styles/withStyles";
 import PropTypes from "prop-types";
 
@@ -57,23 +56,18 @@ class Dashboard extends React.Component {
       role: "Teacher", 
       student_id: "Baldi"
     }
-    console.log(this.state["X-Auth-Token"]);
   }
 
   render() {
     let teacherCreateMenu;
-    let teacherImageMenu;
     if (this.state.role != "Student") {
       teacherCreateMenu = <CreateStack token={this.state["X-Auth-Token"]} tenant_id={this.state.tenant_id}/>;
-      teacherImageMenu = <CreateImage token={this.state["X-Auth-Token"]} tenant_id={this.state.tenant_id}/>;
     } else {
       teacherCreateMenu = null;
-      teacherImageMenu = null;
     }
     return (
       <div>
         {teacherCreateMenu}<br/>
-        {teacherImageMenu}<br/>
         <HeatApi token={this.state["X-Auth-Token"]} tenant_id={this.state.tenant_id} 
         cardCategory={this.props.classes.cardCategory} 
         cardTitle={this.props.classes.cardTitle} role={this.state.role}

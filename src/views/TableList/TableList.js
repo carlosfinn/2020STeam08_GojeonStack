@@ -11,6 +11,7 @@ import CardBody from "components/Card/CardBody.js";
 import PropTypes from "prop-types";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Button from '@material-ui/core/Button';
+import CreateImage from "components/Dialog/CreateImage.jsx";
 
 const styles = {
   cardCategoryWhite: {
@@ -82,6 +83,8 @@ class TableList extends React.Component {
   render() {
     var test = this.state.images;
 
+    let teacherImageMenu = <CreateImage token={this.state["X-Auth-Token"]} tenant_id={this.state.tenant_id}/>;
+
     for (var i=0; i<test.length; i++) {
       console.log()
       const id = test[i][5];
@@ -109,17 +112,18 @@ class TableList extends React.Component {
     return (
       <GridContainer>
         <GridItem xs={12} sm={12} md={12}>
+          {teacherImageMenu}
           <Card>
             <CardHeader color="primary">
-              <h4 className={this.props.classes.cardTitleWhite}>Simple Table</h4>
+              <h4 className={this.props.classes.cardTitleWhite}>Image list</h4>
               <p className={this.props.classes.cardCategoryWhite}>
-                Here is a subtitle for this table
+                Here is a list of images for virtual machiene
               </p>
             </CardHeader>
             <CardBody>
               <Table
                 tableHeaderColor="primary"
-                tableHead={["Name", "Minimun RAM (MB)", "Minimum Disk (GB)", "Disk Format", "Status", "Delete"]}
+                tableHead={["Name", "Minimun RAM (MB)", "Minimum Disk (GB)", "Disk Format", "Status", "Image_id", "Delete"]}
                 tableData={this.state.images}
               />
             </CardBody>

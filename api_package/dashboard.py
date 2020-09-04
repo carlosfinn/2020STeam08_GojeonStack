@@ -132,6 +132,10 @@ def createImage():
     min_ram = requestHeader.get("min_ram", 0)
     name = requestHeader.get("name", get_random_string(16))
 
+    os.system('source ./admin-openrc.sh')
+    create_command = '''openstack image create --disk-format %s --min-disk %d --min-ram %d --public %s''' % (disk_format, int(min_disk), int(min_ram), name)
+    os.system(create_command)
+
     filename = ''
     if request.method == 'POST':
         # check if the post request has the file part
@@ -139,17 +143,20 @@ def createImage():
         if 'file' not in request.files:
             flash('No file part')
         file = request.files['file']
+        filename = file.filename
         # if user does not select file, browser also
         # submit an empty part without filename
         if file.filename == '':
             flash('No selected file')
         if file:
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
-            filename = file.filename
 
-    os.system('source ../../')
-    create_command = '''openstack image create --disk-format %s --min-disk %d --min-ram %d --file %s --public %s''' % (disk_format, int(min_disk), int(min_ram), UPLOAD_FOLDER + '/' + filename, name)
-    os.system(create_command)
+    filedir = UPLOAD_FOLDER + '/' + filename
+    upload_command = '''curl -i -X PUT -H "X-Auth-Token: %s" -H "Content-Type: application/octet-stream" -d %s %s/v2/images/%s/file''' \
+        % (X_AUTH_TOKEN, filedir, 'http://localhost/image/', api.searchforImage(X_AUTH_TOKEN, name))
+    print(upload_command)
+    os.system(upload_command)
+    os.system('rm '+filedir)
     
     return {}
 
