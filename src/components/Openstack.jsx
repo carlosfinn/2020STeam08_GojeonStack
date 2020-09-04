@@ -65,6 +65,19 @@ class StackInfo extends React.Component {
     }))
   }
 
+  checkEnrolled() {
+    const check_url = "http://164.125.70.19:16384/api/stack/enrollcheck";
+    fetch(check_url, {
+      method: 'GET', 
+      headers: {
+        "stack_id": this.props.stack_id, 
+        "student_id": this.state.student_id
+      }
+    }).then((res) => res.json()).then((json) => this.setState({
+      enrolleddata: json
+    }));
+  }
+
   enrollStudent() {
     const url = "http://164.125.70.19:16384/api/stack/enrollconsole";
     const check_url = "http://164.125.70.19:16384/api/stack/getlectureoverstate";
@@ -80,9 +93,10 @@ class StackInfo extends React.Component {
       }
     }
 
-    fetch(url, request).then((res) => res.json()).then((json) => this.setState({
+    this.checkEnrolled();
+    if (!this.state.enrolleddata.enrolled) fetch(url, request).then((res) => res.json()).then((json) => this.setState({
       studentconsole: json
-    }))
+    }));
   }
 
   DeleteStack() {
@@ -129,17 +143,7 @@ class StackInfo extends React.Component {
     else console = null;
 
     if (isStudent) {
-      const check_url = "http://164.125.70.19:16384/api/stack/enrollcheck";
-      fetch(check_url, {
-        method: 'GET', 
-        headers: {
-          "stack_id": this.props.stack_id, 
-          "student_id": this.state.student_id
-        }
-      }).then((res) => res.json()).then((json) => this.setState({
-        enrolleddata: json
-      }));
-
+      this.checkEnrolled();
       if (!this.state.enrolleddata.enrolled) LectureConsole = <Button variant="contained" color="primary" onClick={this.enrollStudent.bind(this)}>Take Lecture</Button>;
       else {
         this.enrollStudent();
