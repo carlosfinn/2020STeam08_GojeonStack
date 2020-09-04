@@ -52,7 +52,7 @@ class CreateImage extends React.Component {
     }
 
     createImage() {
-        const url = 'http://0.0.0.0:5000/api/image/create';
+        const url = 'http://164.125.70.19:16384/api/image/create';
         const test = this.state;
 
         var reader = new FileReader();

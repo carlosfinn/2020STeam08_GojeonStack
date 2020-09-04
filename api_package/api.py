@@ -234,8 +234,14 @@ def getInstanceConsole(X_AUTH_TOKEN: str, instance_id: str):
     requestResult = requests.post(url, headers=rHeaders, data=json.dumps(rBody))
     requestResult.raise_for_status()
     console_info = requestResult.json()
+    print("여기는 콘솔 정보입니다. ")
+    print(console_info)
 
-    return console_info.get("console", {})
+    url_info = console_info.get("console", {})
+    url_split = url_info.get('url', '').split(':')
+    port_info = url_split[-1]
+
+    return {'url': localhost + ':' + port_info }
 
 def getEnrolledCount(student_id: str, stack_id: str):
     lecture_sign_up_list = pymysql.connect(

@@ -51,7 +51,7 @@ class CreateStack extends React.Component {
     }
 
     getImageInfo = async() => {
-        await fetch("http://0.0.0.0:5000/api/image/list", {
+        await fetch("http://164.125.70.19:16384/api/image/list", {
             method: 'GET', 
             headers: {
                 "X-Auth-Token": this.state.token
@@ -96,7 +96,7 @@ class CreateStack extends React.Component {
     }
 
     createStack() {
-        const url = 'http://0.0.0.0:5000/api/stack/create';
+        const url = 'http://164.125.70.19:16384/api/stack/create';
         const requestBody = {
             stack_name: this.state.stack_name, 
             vcpus: this.state.vcpus, 

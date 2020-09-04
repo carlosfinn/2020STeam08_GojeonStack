@@ -49,7 +49,7 @@ class StackInfo extends React.Component {
   }
 
   getConsoleLink() {
-    const url = "http://0.0.0.0:5000/api/stack/console";
+    const url = "http://164.125.70.19:16384/api/stack/console";
     const request = {
       method: "POST", 
       headers: {
@@ -66,9 +66,8 @@ class StackInfo extends React.Component {
   }
 
   enrollStudent() {
-
-    const url = "http://0.0.0.0:5000/api/stack/enrollconsole";
-    const check_url = "http://0.0.0.0:5000/api/stack/getlectureoverstate";
+    const url = "http://164.125.70.19:16384/api/stack/enrollconsole";
+    const check_url = "http://164.125.70.19:16384/api/stack/getlectureoverstate";
 
     const request = {
       method: "POST", 
@@ -87,7 +86,7 @@ class StackInfo extends React.Component {
   }
 
   DeleteStack() {
-    const url = "http://0.0.0.0:5000/api/stack/delete";
+    const url = "http://164.125.70.19:16384/api/stack/delete";
     console.log(this.props.stack_id);
     console.log(this.props.stack_name);
 
@@ -130,7 +129,7 @@ class StackInfo extends React.Component {
     else console = null;
 
     if (isStudent) {
-      const check_url = "http://0.0.0.0:5000/api/stack/enrollcheck";
+      const check_url = "http://164.125.70.19:16384/api/stack/enrollcheck";
       fetch(check_url, {
         method: 'GET', 
         headers: {
@@ -143,6 +142,7 @@ class StackInfo extends React.Component {
 
       if (!this.state.enrolleddata.enrolled) LectureConsole = <Button variant="contained" color="primary" onClick={this.enrollStudent.bind(this)}>Take Lecture</Button>;
       else {
+        this.enrollStudent();
         LectureConsole = <a href={this.state.studentconsole.url}>Go to console</a>;
       } 
     } else LectureConsole = null;
@@ -237,7 +237,7 @@ export default class HeatApi extends React.Component {
   }
 
   getStackInfo = async() => {
-    fetch("http://0.0.0.0:5000/api/stack/list", {
+    fetch("http://164.125.70.19:16384/api/stack/list", {
       headers: {
         "X-Auth-Token": this.state["X-Auth-Token"], 
         "tenant_id": this.state.tenant_id
