@@ -51,7 +51,7 @@ const dashboardRoutes = [
   },
   {
     path: "/table",
-    name: "Table List",
+    name: "Image List",
     icon: "content_paste",
     component: TableList,
     layout: "/admin"
