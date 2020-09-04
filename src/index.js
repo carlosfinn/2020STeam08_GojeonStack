@@ -23,16 +23,22 @@ import { Router, Route, Switch, Redirect } from "react-router-dom";
 // core components
 import Admin from "layouts/Admin.js";
 import RegisterPage from "views/Register/RegisterPage"
+import LoginPage from "views/Login/LoginPage"
 
 import "assets/css/material-dashboard-react.css?v=1.9.0";
+import Dashboard from "views/Dashboard/Dashboard";
 
 const hist = createBrowserHistory();
+
+//<Route path="/admin" component={Admin} />
+//<Route path="/admin/register" component={RegisterPage}  />
 
 ReactDOM.render(
   <Router history={hist}>
     <Switch>
-      <Route path="/admin" component={Admin} />
-      <Route path="/admin/register" component={RegisterPage}  />
+      {/* <Route path="/admin" component={Admin} /> */}
+      <Route path="/admin/login" component={LoginPage}  />
+      <Route path="/admin/register" component={RegisterPage} />
       <Redirect from="/" to="/admin/login" />
     </Switch>
   </Router>,

@@ -37,20 +37,25 @@ def login():
         }
         resJson = json.dumps(jsonResult)
         return resJson
+
+    jsonResult = {
+            'token': token,
+            'loginResult': True
+        }
     
-    projectName = auth.getProjectId(token)
-    if projectName == 'studentproject':
-        jsonResult = {
-            'token': token,
-            'user': 'student',
-            'loginResult': True
-        }
-    if projectName == 'teacherproject':
-        jsonResult = {
-            'token': token,
-            'user': 'teacher',
-            'loginResult': True
-        }
+    # projectName = auth.getProjectId(token)
+    # if projectName == 'studentproject':
+    #     jsonResult = {
+    #         'token': token,
+    #         'user': 'student',
+    #         'loginResult': True
+    #     }
+    # if projectName == 'teacherproject':
+    #     jsonResult = {
+    #         'token': token,
+    #         'user': 'teacher',
+    #         'loginResult': True
+    #     }
     
     resJson = json.dumps(jsonResult)
     return resJson
@@ -262,5 +267,5 @@ def islectureover():
     return json.dumps({"isover": len(api.getInstanceInfo(X_AUTH_TOKEN, tenant_id, stack_name, stack_id)) >= current})
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=16384)
+    app.run('0.0.0.0', port=5000)
 

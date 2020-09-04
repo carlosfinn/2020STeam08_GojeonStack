@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Link, Redirect } from 'react-router-dom';
+import { Router, Switch, Route, Link, Redirect } from 'react-router-dom';
+import { createBrowserHistory } from "history";
 import Button from '../../styles/Button';
 import palette from '../../styles/palette';
+
+import Admin from "layouts/Admin.js";
+import Dashboard from "views/Dashboard/Dashboard.js";
 
 
 const AuthFormBlock = styled.div`
@@ -47,12 +51,17 @@ const ButtonWithMarginTop = styled(Button)`
     margin-top: 1rem;
 `;
 
-class LoginForm extends Component {
+const hist = createBrowserHistory();
 
-    state = {
-        id: '',
-        pw: '',
-        token: null
+class LoginForm extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            id: '',
+            pw: '',
+            token: null, 
+            loginresult: {}
+        }
     }
 
     handleChange = (e) => {
@@ -67,7 +76,7 @@ class LoginForm extends Component {
             id: this.state.id,
             pw: this.state.pw
         };
-        fetch("http://164.125.70.19:16384/login",{
+        fetch("http://0.0.0.0:5000/login",{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -80,26 +89,44 @@ class LoginForm extends Component {
                     this.setState({
                         token: responseData.token
                     });
+                    console.log(this.state.token);
                 }
                 else {
                     //다시 로그인화면으로 
                 }
-            });
+        });
+        
     }
 
 
     render() {
         if(this.state.token != null) {
             return (
-                <Redirect
-                    to={{
-                        pathname: "/admin/dashboard",
-                        state: {
-                            token: this.state.token
-                        }
+                // <Redirect
+                //     to={{
+                //         pathname: "/admin/dashboard",
+                //         state: {
+                //             token: this.state.token
+                //         }
                                 
-                    }}
-                />
+                //     }}
+                // />
+                <Router history={hist}>
+                    <Switch>
+                        <Route path="/admin" component={Admin} />
+                        <Route path="/admin/dashboard" component={Dashboard} />
+                        <Redirect 
+                            to={{
+                                pathname: "/admin/dashboard",
+                                state: {
+                                    token: this.state.token
+                                }    
+                            }}
+                        />
+                    </Switch>
+                </Router>
+                
+              
             );
         }
         return (

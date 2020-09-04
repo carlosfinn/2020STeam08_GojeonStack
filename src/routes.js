@@ -36,12 +36,7 @@ import NotificationsPage from "views/Notifications/Notifications.js";
 import UpgradeToPro from "views/UpgradeToPro/UpgradeToPro.js";
 
 const dashboardRoutes = [
-  {
-    path: "/login",
-    name: "Login",
-    component: LoginPage,
-    layout: "/admin"
-  },
+  
   {
     path: "/dashboard",
     name: "Dashboard",

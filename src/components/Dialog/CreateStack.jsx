@@ -51,10 +51,10 @@ class CreateStack extends React.Component {
     }
 
     getImageInfo = async() => {
-        await fetch("http://164.125.70.19:16384/api/image/list", {
+        await fetch("http://0.0.0.0:5000/api/image/list", {
             method: 'GET', 
             headers: {
-                "X-Auth-Token": "gAAAAABfK64mNuoSqG-fLUqY2NXBqhALbHfYk-fLgRvMgQdh1jepcrIk44YZqbOEQb8Q_FUFZpUeaCaeo4SujJxI2FHD47FSLmHrEr4EU9fHeeZ9p4MvPZ3xtPYPqEgJ91E4Sxz6PS52JNNtKUulZXdY1cOJriBAL8yedDunofCxtvSdqL61arw"
+                "X-Auth-Token": this.state.token
             }
         }).then((res) => res.json()).then((json) => this.setState({
             image_list: json
@@ -96,7 +96,7 @@ class CreateStack extends React.Component {
     }
 
     createStack() {
-        const url = 'http://164.125.70.19:16384/api/stack/create';
+        const url = 'http://0.0.0.0:5000/api/stack/create';
         const requestBody = {
             stack_name: this.state.stack_name, 
             vcpus: this.state.vcpus, 
@@ -108,7 +108,7 @@ class CreateStack extends React.Component {
         const request = {
             method: 'POST', 
             headers: {
-                "X-Auth-Token": "gAAAAABfK64mNuoSqG-fLUqY2NXBqhALbHfYk-fLgRvMgQdh1jepcrIk44YZqbOEQb8Q_FUFZpUeaCaeo4SujJxI2FHD47FSLmHrEr4EU9fHeeZ9p4MvPZ3xtPYPqEgJ91E4Sxz6PS52JNNtKUulZXdY1cOJriBAL8yedDunofCxtvSdqL61arw", 
+                "X-Auth-Token": this.state.token, 
                 "tenant_id": "ac09f439d0d941c39060b52864146c62"
             }, 
             body: JSON.stringify(requestBody)
