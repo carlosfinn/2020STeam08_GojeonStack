@@ -85,23 +85,6 @@ def getStackList(X_AUTH_TOKEN: str, tenant_id: str):
 
     return stacks
 
-
-def getImageList(X_AUTH_TOKEN: str):
-    rHeaders = {
-        'Content-Type': 'application/json',
-        "X-Auth-Token": X_AUTH_TOKEN
-    }
-
-    url = localhost + "/image/v2/images"
-    requestResult = requests.get(url, headers=rHeaders)
-    requestResult.raise_for_status()
-
-    resultJson = requestResult.json()
-    imageInfo = resultJson.get("images", [])
-    print(imageInfo)
-
-    return imageInfo
-
 def deleteStack(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_id: str):
     lecture_sign_up_list = pymysql.connect(
         user='root',
@@ -140,6 +123,34 @@ def getStackStatus(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_id:
     requestResult.raise_for_status()
 
     return stack_info
+
+
+def getImageList(X_AUTH_TOKEN: str):
+    rHeaders = {
+        'Content-Type': 'application/json',
+        "X-Auth-Token": X_AUTH_TOKEN
+    }
+
+    url = localhost + "/image/v2/images"
+    requestResult = requests.get(url, headers=rHeaders)
+    requestResult.raise_for_status()
+
+    resultJson = requestResult.json()
+    imageInfo = resultJson.get("images", [])
+
+    return imageInfo
+
+def deleteImage(X_AUTH_TOKEN: str, image_id):
+    rHeaders = {
+        'Content-Type': 'application/json',
+        "X-Auth-Token": X_AUTH_TOKEN
+    }
+
+    url = localhost + '/image/v2/images/%s' % (image_id)
+    requestResult = requests.delete(url, headers=rHeaders)
+    requestResult.raise_for_status()
+
+    return {}
 
 def uploadImage(X_AUTH_TOKEN: str, fstream, name: str, disk_format: str, min_disk: int, min_ram: int):
     rHeaders = {

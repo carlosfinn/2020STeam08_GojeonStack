@@ -117,17 +117,7 @@ class StackInfo extends React.Component {
         body: JSON.stringify(requestBody)
     };
 
-    fetch(url, request)
-
-    const request_2 = {
-      method: 'GET', 
-      headers: {
-          "X-Auth-Token": this.state["X-Auth-Token"], 
-          "tenant_id": this.state.tenant_id, 
-          "stack_name": this.props.stack_name, 
-          "stack_id": this.props.stack_id
-      }
-    };
+    fetch(url, request);
   }
 
   render() {
@@ -136,20 +126,18 @@ class StackInfo extends React.Component {
     let console;
     let LectureConsole;
 
-    if (!isStudent) DeleteButton = <Button variant="contained" color="primary" onClick={this.DeleteStack.bind(this)}>DELETE</Button>;
-    else DeleteButton = <br/>;
-
-    if (this.props.stack_status == "CREATE_COMPLETE") console = <a href={this.state.consoleData.url}>Go to console</a>;
-    else console = null;
-
     if (isStudent) {
+      DeleteButton = <br/>;
       this.checkEnrolled();
       if (!this.state.enrolleddata.enrolled) LectureConsole = <Button variant="contained" color="primary" onClick={this.enrollStudent.bind(this)}>Take Lecture</Button>;
       else {
         this.enrollStudent();
         LectureConsole = <a href={this.state.studentconsole.url}>Go to console</a>;
-      } 
-    } else LectureConsole = null;
+      }
+    } else {
+      DeleteButton = <Button variant="contained" color="primary" onClick={this.DeleteStack.bind(this)}>DELETE</Button>;
+      LectureConsole = null;
+    }
 
     return (
       <GridContainer name={this.props.key}>

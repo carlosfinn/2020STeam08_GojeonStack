@@ -96,14 +96,31 @@ def deleteStack():
 
     return json.dumps(result)
 
+### image api start
+
+@app.route('/api/image/delete', methods=['DELETE'])
+def deleteImage():
+    requestHeader = request.headers
+    X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
+    image_id = requestHeader.get("image_id", None)
+
+    result = api.deleteImage(X_AUTH_TOKEN, image_id)
+
+    return json.dumps(result)
+
 @app.route('/api/image/list', methods=['GET'])
 def listImage():
     requestHeader = request.headers
     X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
 
     result = api.getImageList(X_AUTH_TOKEN)
+    image_table = list()
 
-    return json.dumps(result)
+    for image in result: 
+        image_info = [ image.get("name", ""), image.get("min_ram", 0), image.get("min_disk", 0), image.get("disk_format", ""), image.get("status", ""), image.get("id", "") ]
+        image_table.append(image_info)
+
+    return json.dumps(image_table)
 
 @app.route('/api/image/create', methods=['POST'])
 def createImage():

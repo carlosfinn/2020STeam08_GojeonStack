@@ -10,6 +10,7 @@ import CardHeader from "components/Card/CardHeader.js";
 import CardBody from "components/Card/CardBody.js";
 import PropTypes from "prop-types";
 import withStyles from "@material-ui/core/styles/withStyles";
+import Button from '@material-ui/core/Button';
 
 const styles = {
   cardCategoryWhite: {
@@ -51,11 +52,60 @@ class TableList extends React.Component {
       token: null,
       tenant_id: "ac09f439d0d941c39060b52864146c62", 
       role: "Teacher", 
-      student_id: "Baldi"
+      student_id: "Baldi", 
+      images: []
+    }
+    this.updateInfo();
+    this.interval = setInterval(() => {
+      this.updateInfo();
+    },5000);
+  }
+
+  getImageInfo = async() => {
+    fetch("http://164.125.70.19:16384/api/image/list", {
+      headers: {
+        "X-Auth-Token": this.state["X-Auth-Token"]
+      }
+    }).then((res) => res.json()).then((json) => this.setState({
+      images: json
+    }))
+  }
+
+  updateInfo = async() => {
+    try {
+      this.getImageInfo();
+    } catch (error) {
+      console.log(error);
     }
   }
   
   render() {
+    var test = this.state.images;
+
+    for (var i=0; i<test.length; i++) {
+      console.log()
+      const id = test[i][5];
+      const token = this.state['X-Auth-Token'];
+
+      let deletebutton = <Button variant="contained" color="primary" onClick={function(event) {
+        event.preventDefault();
+
+        const url = "http://164.125.70.19:16384/api/image/delete";
+
+        const request = {
+            method: 'DELETE', 
+            headers: {
+                "X-Auth-Token": token, 
+                "image_id": id
+            }
+        };
+        console.log(request);
+
+        fetch(url, request);
+      }}>DELETE</Button>;
+      test[i][6] = deletebutton;
+    }
+
     return (
       <GridContainer>
         <GridItem xs={12} sm={12} md={12}>
@@ -69,15 +119,8 @@ class TableList extends React.Component {
             <CardBody>
               <Table
                 tableHeaderColor="primary"
-                tableHead={["Name", "Country", "City", "Salary"]}
-                tableData={[
-                  ["Dakota Rice", "Niger", "Oud-Turnhout", "$36,738"],
-                  ["Minerva Hooper", "Curaçao", "Sinaai-Waas", "$23,789"],
-                  ["Sage Rodriguez", "Netherlands", "Baileux", "$56,142"],
-                  ["Philip Chaney", "Korea, South", "Overland Park", "$38,735"],
-                  ["Doris Greene", "Malawi", "Feldkirchen in Kärnten", "$63,542"],
-                  ["Mason Porter", "Chile", "Gloucester", "$78,615"]
-                ]}
+                tableHead={["Name", "Minimun RAM (MB)", "Minimum Disk (GB)", "Disk Format", "Status", "Delete"]}
+                tableData={this.state.images}
               />
             </CardBody>
           </Card>
