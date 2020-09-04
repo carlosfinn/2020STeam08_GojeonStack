@@ -35,10 +35,6 @@ import NotificationsPage from "views/Notifications/Notifications.js";
 import UpgradeToPro from "views/UpgradeToPro/UpgradeToPro.js";
 
 const dashboardRoutes = [
-<<<<<<< HEAD
-  
-=======
->>>>>>> parent of 374042c... Auth 추가
   {
     path: "/dashboard",
     name: "Dashboard",
