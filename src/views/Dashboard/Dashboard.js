@@ -54,8 +54,8 @@ class Dashboard extends React.Component {
       "X-Auth-Token": "gAAAAABfK64mNuoSqG-fLUqY2NXBqhALbHfYk-fLgRvMgQdh1jepcrIk44YZqbOEQb8Q_FUFZpUeaCaeo4SujJxI2FHD47FSLmHrEr4EU9fHeeZ9p4MvPZ3xtPYPqEgJ91E4Sxz6PS52JNNtKUulZXdY1cOJriBAL8yedDunofCxtvSdqL61arw", 
       token: null,
       tenant_id: "ac09f439d0d941c39060b52864146c62", 
-      role: "Student", 
-      student_id: "jumprope"
+      role: "Teacher", 
+      student_id: "Baldi"
     }
     console.log(this.state["X-Auth-Token"]);
   }
@@ -78,80 +78,6 @@ class Dashboard extends React.Component {
         cardCategory={this.props.classes.cardCategory} 
         cardTitle={this.props.classes.cardTitle} role={this.state.role}
         stats={this.props.classes.stats} student_id={this.state.student_id}/>
-        <GridContainer>
-          <GridItem xs={12} sm={12} md={4}>
-            <Card chart>
-              <CardHeader color="success">
-                <ChartistGraph
-                  className="ct-chart"
-                  data={dailySalesChart.data}
-                  type="Line"
-                  options={dailySalesChart.options}
-                  listener={dailySalesChart.animation}
-                />
-              </CardHeader>
-              <CardBody>
-                <h4 className={this.props.classes.cardTitle}>Daily Sales</h4>
-                <p className={this.props.classes.cardCategory}>
-                  <span className={this.props.classes.successText}>
-                    <ArrowUpward className={this.props.classes.upArrowCardCategory} /> 55%
-                  </span>{" "}
-                  increase in today sales.
-                </p>
-              </CardBody>
-              <CardFooter chart>
-                <div className={this.props.classes.stats}>
-                  <AccessTime /> updated 4 minutes ago
-                </div>
-              </CardFooter>
-            </Card>
-          </GridItem>
-          <GridItem xs={12} sm={12} md={4}>
-            <Card chart>
-              <CardHeader color="warning">
-                <ChartistGraph
-                  className="ct-chart"
-                  data={emailsSubscriptionChart.data}
-                  type="Bar"
-                  options={emailsSubscriptionChart.options}
-                  responsiveOptions={emailsSubscriptionChart.responsiveOptions}
-                  listener={emailsSubscriptionChart.animation}
-                />
-              </CardHeader>
-              <CardBody>
-                <h4 className={this.props.classes.cardTitle}>Email Subscriptions</h4>
-                <p className={this.props.classes.cardCategory}>Last Campaign Performance</p>
-              </CardBody>
-              <CardFooter chart>
-                <div className={this.props.classes.stats}>
-                  <AccessTime /> campaign sent 2 days ago
-                </div>
-              </CardFooter>
-            </Card>
-          </GridItem>
-          <GridItem xs={12} sm={12} md={4}>
-            <Card chart>
-              <CardHeader color="danger">
-                <ChartistGraph
-                  className="ct-chart"
-                  data={completedTasksChart.data}
-                  type="Line"
-                  options={completedTasksChart.options}
-                  listener={completedTasksChart.animation}
-                />
-              </CardHeader>
-              <CardBody>
-                <h4 className={this.props.classes.cardTitle}>Completed Tasks</h4>
-                <p className={this.props.classes.cardCategory}>Last Campaign Performance</p>
-              </CardBody>
-              <CardFooter chart>
-                <div className={this.props.classes.stats}>
-                  <AccessTime /> campaign sent 2 days ago
-                </div>
-              </CardFooter>
-            </Card>
-          </GridItem>
-        </GridContainer>
         <GridContainer>
           <GridItem xs={12} sm={12} md={6}>
             <CustomTabs

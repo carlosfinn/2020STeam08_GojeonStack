@@ -54,29 +54,28 @@ class CreateImage extends React.Component {
     createImage() {
         const url = 'http://164.125.70.19:16384/api/image/create';
         const test = this.state;
+        const data = new FormData();
+        data.append('file', this.uploadInput.files[0]);
 
-        var reader = new FileReader();
-        if (document.getElementById("image_file")) reader.readAsBinaryString(document.getElementById("image_file").files[0]);
-        reader.onload = function(e) {
-            const token = test["X-Auth-Token"];
-            const request = {
-                method: 'PUT', 
-                headers: {
-                    "X-Auth-Token": token,  
-                    "name": test.image_name, 
-                    "min_ram": test.min_ram, 
-                    "min_disk": test.min_disk
-                }, 
-                body: reader.result
-            };
-    
-            fetch(url, request).then((response) => {
-                if (response.status <= 210) alert("Image has been updated");
-                else {
-                    alert("Image updating has been canceled by some reasons");
-                }
-            });
-        }
+        const token = test["X-Auth-Token"];
+        const request = {
+            method: 'POST', 
+            headers: {
+                "X-Auth-Token": token,  
+                "name": test.image_name, 
+                "min_ram": test.min_ram, 
+                "min_disk": test.min_disk
+            }, 
+            body: data
+        };
+
+        fetch(url, request).then((response) => {
+            if (response.status <= 210) alert("Image has been updated");
+            else {
+                alert("Image updating has been canceled by some reasons");
+            }
+        });
+        
     }
 
     handleFormSubmit(e) {
@@ -111,10 +110,12 @@ class CreateImage extends React.Component {
             <Dialog open={this.state.open} onClose={this.handleClose}>
                 <DialogTitle>Create Image</DialogTitle>
                     <DialogContent>
+                        <form onSubmit={this.handleFormSubmit}>
                         <TextField label="image_name" type="text" name="image_name" style={{width:240}} value={this.state.image_name} onChange={this.handleValueChange} margin="normal"/><br/>
                         <TextField label="min_ram (MB)" type="number" name="min_ram" style={{width:240}} value={this.state.min_ram} onChange={this.handleValueChange} margin="normal"/><br/>
                         <TextField label="min_disk (GB)" type="number" name="min_disk" style={{width:240}} value={this.state.min_disk} error={this.state.min_disk<=this.state.constraint_size} onChange={this.handleValueChange} margin="normal"/><br/><br/>
-                        <input type="file" name="image_file" id="image_file" accept="*" value={this.state.file} onChange={this.handleValueChange} /><br/><br/>
+                        <input type="file" name="image_file" id="image_file" accept="*" ref={(ref) => { this.uploadInput = ref; }} value={this.state.file} onChange={this.handleValueChange} /><br/><br/>
+                        </form>
                     </DialogContent>
                 <DialogActions>
                 <Button variant="contained" color="primary" onClick={this.handleFormSubmit}>OK</Button>

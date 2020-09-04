@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, flash, redirect
 from flask_cors import CORS
 import json, os, api
 import random, string, time
@@ -10,6 +10,9 @@ def get_random_string(length):
     return result_str
 
 app = Flask(__name__)
+UPLOAD_FOLDER = '../imageBuffer'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.secret_key = b'x9@Q!2vC8o*'
 
 cors = CORS(
     app, resources={
@@ -102,7 +105,7 @@ def listImage():
 
     return json.dumps(result)
 
-@app.route('/api/image/create', methods=['PUT'])
+@app.route('/api/image/create', methods=['POST'])
 def createImage():
     requestHeader = request.headers
 
@@ -112,10 +115,26 @@ def createImage():
     min_ram = requestHeader.get("min_ram", 0)
     name = requestHeader.get("name", get_random_string(16))
 
-    print(request.get_data())
-    result = api.uploadImage(X_AUTH_TOKEN, request.get_data(), name, disk_format, int(min_disk), int(min_ram))
+    filename = ''
+    if request.method == 'POST':
+        # check if the post request has the file part
+        print(request.files)
+        if 'file' not in request.files:
+            flash('No file part')
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+        if file:
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
+            filename = file.filename
 
-    return json.dumps(result)
+    os.system('source ../../')
+    create_command = '''openstack image create --disk-format %s --min-disk %d --min-ram %d --file %s --public %s''' % (disk_format, int(min_disk), int(min_ram), UPLOAD_FOLDER + '/' + filename, name)
+    os.system(create_command)
+    
+    return {}
 
 @app.route('/api/stack/console', methods=['POST'])
 def getInstanceConsole():
