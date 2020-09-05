@@ -45,7 +45,10 @@ class CreateStack extends React.Component {
     }
     
     handleClickOpen() {
-        this.getImageInfo();
+        this.interval = setInterval(() => {
+            this.getImageInfo();
+            this.checkConstraints();
+        }, 1000);
         this.setState({
             open: true
         });
@@ -67,26 +70,26 @@ class CreateStack extends React.Component {
         }).then((json) => this.setState({
             image_list: json
         }));
+        this.checkConstraints();
+    }
 
-        try {
-            var images = {};
-            for (var image of this.state.image_list) {
-                images[image["name"]] = {
-                    "min_ram": image["min_ram"], 
-                    "min_disk": image["min_disk"]
-                }
+    checkConstraints() {
+        var images = {};
+        for (var image of this.state.image_list) {
+            images[image["name"]] = {
+                "min_ram": image["min_ram"], 
+                "min_disk": image["min_disk"]
             }
-            this.setState({
-                image_constraints: images
-            })
-            console.log(this.state.image_constraints);
-        } catch (error) {
-            console.log(error);
         }
+        console.log(images);
+        this.setState({
+            image_constraints: images
+        });
     }
     
     handleValueChange(e) {
         let nextState = {};
+        this.checkConstraints();
 
         if (e.target.name == "vcpus" || e.target.name == "ram" || e.target.name == "disk") nextState[e.target.name] = Number(e.target.value);
         else nextState[e.target.name] = e.target.value;
@@ -99,7 +102,6 @@ class CreateStack extends React.Component {
         nextState['ram_error'] = (e.target.name == "ram" ? e.target.value: this.state.ram) < (this.state.image_constraints[selected]? this.state.image_constraints[selected]['min_ram']: 0);
         nextState['disk_error'] = (e.target.name == "disk" ? e.target.value: this.state.disk) < (this.state.image_constraints[selected]? this.state.image_constraints[selected]['min_disk']: 0);
 
-        console.log(nextState);
         this.setState(nextState);
     }
 
@@ -165,7 +167,7 @@ class CreateStack extends React.Component {
             open: false
         });
     }
-    
+
     render() {
         const { classes } = this.props;
         return (

@@ -20,14 +20,10 @@ class CreateImage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            image_name: "", 
-            min_ram: 0, 
-            min_disk: 0, 
-            constraint_size: -1, 
-            open: false, 
-            disk_format: "", 
-            "X-Auth-Token": this.props.token, 
-            format_list: ['ami', 'ari', 'aki', 'vhd', 'vhdx', 'vmdk', 'raw', 'qcow2', 'vdi', 'ploop', 'iso']
+            title: "", 
+            content: "", 
+            subject: "", 
+            "X-Auth-Token": this.props.token
         }
 
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
@@ -43,29 +39,22 @@ class CreateImage extends React.Component {
     }
     
     handleValueChange(e) {
+        e.preventDefault();
         let nextState = {};
-        if (e.target.name != "image_file") nextState[e.target.name] = e.target.value;
-        else if (e.target.files[0]) {
-            console.log(e.target.files[0].size);
-            nextState["constraint_size"] = e.target.files[0].size / 1024.0 / 1024.0 / 1024.0;
-        } else nextState["constraint_size"] = -1;
+        nextState[e.target.name] = e.target.value;
         this.setState(nextState);
         console.log(nextState);
     }
 
-    createImage() {
-        const url = 'http://164.125.70.19:16384/api/image/create';
+    createPost() {
+        const url = 'http://164.125.70.19:16384/api/board/create';
         const data = new FormData();
         data.append('file', this.uploadInput.files[0]);
 
         const request = {
             method: 'POST', 
             headers: {
-                "X-Auth-Token": this.state["X-Auth-Token"],  
-                "name": this.state.image_name, 
-                "min_ram": this.state.min_ram, 
-                "min_disk": this.state.min_disk, 
-                "disk_format": this.state.disk_format
+                "X-Auth-Token": this.state["X-Auth-Token"]
             }, 
             body: data
         };
@@ -75,31 +64,23 @@ class CreateImage extends React.Component {
             else {
                 alert("Image updating has been canceled by some reasons");
             }
-        });
-        
+        }); 
     }
 
     handleFormSubmit(e) {
-        e.preventDefault();
         this.createImage();
         this.setState({
-            image_name: '', 
-            min_ram: 0, 
-            min_disk: 0, 
-            constraint_size: -1, 
-            open: false, 
-            disk_format: ""
+            title: "", 
+            content: "", 
+            subject: ""
         });
     }
     
     handleClose() {
         this.setState({
-            image_name: '', 
-            min_ram: 0, 
-            min_disk: 0, 
-            constraint_size: -1, 
-            open: false, 
-            disk_format: ""
+            title: "", 
+            content: "", 
+            subject: ""
         });
     }
     
@@ -108,16 +89,15 @@ class CreateImage extends React.Component {
         return (
             <div>
             <Button variant="contained" color="primary" onClick={this.handleClickOpen}>
-                Create Image
+                Write
             </Button>
             <Dialog open={this.state.open} onClose={this.handleClose}>
                 <DialogTitle>Create Image</DialogTitle>
                     <DialogContent>
                         <form onSubmit={this.handleFormSubmit}>
-                        <TextField label="image_name" type="text" name="image_name" style={{width:240}} value={this.state.image_name} onChange={this.handleValueChange} margin="normal"/><br/>
-                        <TextField label="min_ram (MB)" type="number" name="min_ram" style={{width:240}} value={this.state.min_ram} onChange={this.handleValueChange} margin="normal"/><br/>
-                        <TextField label="min_disk (GB)" type="number" name="min_disk" style={{width:240}} value={this.state.min_disk} error={this.state.min_disk<=this.state.constraint_size} onChange={this.handleValueChange} margin="normal"/><br/><br/>
-                        <TextField label="image" type="text" select onChange={this.handleValueChange} style={{width:240}} required name="image" SelectProps={{
+                        <TextField label="Title" type="text" name="image_name" style={{width:600}} value={this.state.title} error={!this.state.title} onChange={this.handleValueChange} margin="normal"/><br/>
+                        <TextField label="Content" type="number" name="min_ram" style={{width:600}} multiline value={this.state.Content} error={!this.state.title} onChange={this.handleValueChange} margin="normal"/><br/>
+                        <TextField label="image" type="text" select onChange={this.handleValueChange} style={{width:600}} required name="image" SelectProps={{
                                 MenuProps: {
                                   className: classes.menu,
                                 }
@@ -128,11 +108,11 @@ class CreateImage extends React.Component {
                                 </MenuItem>
                             ))}
                         </TextField><br/>
-                        <input type="file" name="image_file" id="image_file" accept="*" ref={(ref) => { this.uploadInput = ref; }} value={this.state.file} onChange={this.handleValueChange} /><br/><br/>
+                        <input type="file" name="file" id="file" accept="*" ref={(ref) => { this.uploadInput = ref; }} value={this.state.file} onChange={this.handleValueChange} /><br/><br/>
                         </form>
                     </DialogContent>
                 <DialogActions>
-                <Button variant="contained" color="primary" onClick={this.handleFormSubmit}>OK</Button>
+                <Button variant="contained" color="primary" onClick={this.createPost}>OK</Button>
                 <Button variant="outlined" color="primary" onClick={this.handleClose}>Close</Button>
                 </DialogActions>
             </Dialog>

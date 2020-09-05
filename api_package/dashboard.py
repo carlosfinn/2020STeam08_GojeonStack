@@ -20,7 +20,8 @@ cors = CORS(
         r"/api/*": {"origin": "*"},
         r"/api/vm/*": {"origin": "*"},
         r"/api/stack/*": {"origin": "*"},
-        r"/api/image/*": {"origin": "*"}
+        r"/api/image/*": {"origin": "*"},
+        r"/api/board/*": {"origin": "*"}
     }
 )
 
@@ -208,6 +209,39 @@ def enroll():
     student_id = requestHeader.get("student_id", None)
 
     return json.dumps(api.enrollStudent(X_AUTH_TOKEN, tenant_id, stack_name, stack_id, student_id))
+
+@app.route('/api/board/file', methods=['POST'])
+def boardFile():
+    requestHeader = request.headers
+
+    X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
+    student_id = requestHeader.get("id", None)
+    tenant_id = requestHeader.get("tenant_id", None)
+
+    os.system('source ./admin-openrc.sh')
+
+    filename = ''
+    if request.method == 'POST':
+        # check if the post request has the file part
+        print(request.files)
+        if 'file' not in request.files:
+            flash('No file part')
+        file = request.files['file']
+        filename = file.filename
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+        if file:
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
+
+    filedir = UPLOAD_FOLDER + '/' + filename
+    upload_command = '''curl -i "%s:8080/v1/AUTH_%s" -X PUT -H "X-Auth-Token: %s"''' % (api.localhost, tenant_id, X_AUTH_TOKEN)
+    print(upload_command)
+    os.system(upload_command)
+    os.system('rm '+filedir)
+    
+    return {}
 
 
 if __name__ == '__main__':
