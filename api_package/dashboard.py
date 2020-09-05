@@ -113,6 +113,16 @@ def listImage():
     requestHeader = request.headers
     X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
 
+    print(X_AUTH_TOKEN)
+    result = api.getImageList(X_AUTH_TOKEN)
+
+    return json.dumps(result)
+
+@app.route('/api/image/table', methods=['GET'])
+def tableImage():
+    requestHeader = request.headers
+    X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
+
     result = api.getImageList(X_AUTH_TOKEN)
     image_table = list()
 

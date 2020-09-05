@@ -36,11 +36,12 @@ class CreateStack extends React.Component {
             tenant_id: this.props.tenant_id
         }
 
+        console.log(this.state);
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
         this.handleValueChange = this.handleValueChange.bind(this);
         this.handleClickOpen = this.handleClickOpen.bind(this);
         this.handleClose = this.handleClose.bind(this);
-
+        this.getImageInfo = this.getImageInfo.bind(this);
     }
     
     handleClickOpen() {
@@ -50,15 +51,22 @@ class CreateStack extends React.Component {
         });
     }
 
-    getImageInfo = async() => {
-        await fetch("http://164.125.70.19:16384/api/image/list", {
+    getImageInfo() {
+        fetch("http://164.125.70.19:16384/api/image/list", {
             method: 'GET', 
             headers: {
-                "X-Auth-Token": this.state.token
+                "X-Auth-Token": this.state["X-Auth-Token"]
             }
-        }).then((res) => res.json()).then((json) => this.setState({
+        }).then((res) => {
+            if (res.status <= 210) return res.json();
+            else {
+                alert("List of images couldn`t be loaded.");
+                this.handleClose();
+                return {}
+            }
+        }).then((json) => this.setState({
             image_list: json
-        }))
+        }));
 
         try {
             var images = {};
@@ -108,7 +116,7 @@ class CreateStack extends React.Component {
         const request = {
             method: 'POST', 
             headers: {
-                "X-Auth-Token": this.state.token, 
+                "X-Auth-Token": this.state["X-Auth-Token"], 
                 "tenant_id": "ac09f439d0d941c39060b52864146c62"
             }, 
             body: JSON.stringify(requestBody)

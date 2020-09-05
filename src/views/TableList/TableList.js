@@ -63,7 +63,7 @@ class TableList extends React.Component {
   }
 
   getImageInfo = async() => {
-    fetch("http://164.125.70.19:16384/api/image/list", {
+    fetch("http://164.125.70.19:16384/api/image/table", {
       headers: {
         "X-Auth-Token": this.state["X-Auth-Token"]
       }
@@ -104,7 +104,12 @@ class TableList extends React.Component {
         };
         console.log(request);
 
-        fetch(url, request);
+        fetch(url, request).then((response) => {
+          if (response.status <= 210) alert("Image has been deleted successfully");
+          else {
+              alert("The error occured by some reasons");
+          }
+      });;
       }}>DELETE</Button>;
       test[i][6] = deletebutton;
     }
