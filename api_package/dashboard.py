@@ -1,7 +1,7 @@
 from flask import Flask, request, make_response, flash, redirect, Response
 from flask_cors import CORS
 import requests, json, os, api
-import random, string, time
+import random, string, time, uuid
 
 def get_random_string(length):
     letters = string.ascii_lowercase
@@ -221,7 +221,7 @@ def boardWrite():
     if request.method == 'POST':
         title = requestBody.get("title", None)
         content = requestBody.get("content", None)
-        result = api.uploadPost(X_AUTH_TOKEN, student_id, tenant_id, get_random_string(16), get_random_string(16), title, content, filename)
+        result = api.uploadPost(X_AUTH_TOKEN, student_id, tenant_id, str(uuid.uuid4()), str(uuid.uuid4()), title, content, filename)
         print(result)
         return json.dumps(result)
 
@@ -258,6 +258,10 @@ def uploadFile():
     os.system('rm '+filedir)
 
     return {}
+
+@app.route('/dbinit', methods=['POST'])
+def dbinit():
+    api.startDB()
 
 @app.route('/api/board/test', methods=['GET'])
 def filetest():
