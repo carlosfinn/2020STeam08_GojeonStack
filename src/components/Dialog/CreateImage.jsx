@@ -116,8 +116,8 @@ class CreateImage extends React.Component {
                         <form onSubmit={this.handleFormSubmit}>
                         <TextField label="image_name" type="text" name="image_name" style={{width:240}} value={this.state.image_name} onChange={this.handleValueChange} margin="normal"/><br/>
                         <TextField label="min_ram (MB)" type="number" name="min_ram" style={{width:240}} value={this.state.min_ram} onChange={this.handleValueChange} margin="normal"/><br/>
-                        <TextField label="min_disk (GB)" type="number" name="min_disk" style={{width:240}} value={this.state.min_disk} error={this.state.min_disk<=this.state.constraint_size} onChange={this.handleValueChange} margin="normal"/><br/><br/>
-                        <TextField label="image" type="text" select onChange={this.handleValueChange} style={{width:240}} required name="image" SelectProps={{
+                        <TextField label="min_disk (GB)" type="number" name="min_disk" style={{width:240}} value={this.state.min_disk} error={this.state.min_disk<=this.state.constraint_size} onChange={this.handleValueChange} margin="normal"/><br/>
+                        <TextField label="disk_format" type="text" select onChange={this.handleValueChange} style={{width:240}} required name="disk_format" SelectProps={{
                                 MenuProps: {
                                   className: classes.menu,
                                 }
@@ -127,7 +127,7 @@ class CreateImage extends React.Component {
                                 {format}
                                 </MenuItem>
                             ))}
-                        </TextField><br/>
+                        </TextField><br/><br/>
                         <input type="file" name="image_file" id="image_file" accept="*" ref={(ref) => { this.uploadInput = ref; }} value={this.state.file} onChange={this.handleValueChange} /><br/><br/>
                         </form>
                     </DialogContent>

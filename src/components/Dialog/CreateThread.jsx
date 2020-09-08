@@ -16,13 +16,18 @@ const styles = theme => ({
     }
 });
     
-class CreateImage extends React.Component {
+class CreateThread extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             title: "", 
             content: "", 
             subject: "", 
+            open: false, 
+            filename: "", 
+            foldername: "", 
+            tenant_id: this.props.tenant_id, 
+            student_id: this.props.student_id, 
             "X-Auth-Token": this.props.token
         }
 
@@ -46,33 +51,67 @@ class CreateImage extends React.Component {
         console.log(nextState);
     }
 
-    createPost() {
-        const url = 'http://164.125.70.19:16384/api/board/create';
+    async createPost() {
+        const url = 'http://164.125.70.19:16384/api/board/thread';
         const data = new FormData();
         data.append('file', this.uploadInput.files[0]);
+        console.log(data);
+
+        let upfilename = '';
+        if (this.uploadInput.files[0]) upfilename = this.uploadInput.files[0].name
 
         const request = {
             method: 'POST', 
             headers: {
-                "X-Auth-Token": this.state["X-Auth-Token"]
+                "X-Auth-Token": this.state["X-Auth-Token"], 
+                tenant_id: this.state.tenant_id, 
+                student_id: this.state.student_id
             }, 
-            body: data
+            body: JSON.stringify({
+                filename: upfilename, 
+                title: this.state.title, 
+                content: this.state.content
+            })
         };
 
-        fetch(url, request).then((response) => {
-            if (response.status <= 210) alert("Image has been updated");
+        const Response = await fetch(url, request);
+        const FileInfo = await Response.json();
+
+        if (this.uploadInput.files[0]) {
+            fetch('http://164.125.70.19:16384/api/board/file', {
+                method: 'POST', 
+                headers: {
+                    "X-Auth-Token": this.state["X-Auth-Token"], 
+                    tenant_id: this.state.tenant_id, 
+                    student_id: this.state.student_id, 
+                    filename: FileInfo.filename, 
+                    foldername: FileInfo.foldername
+                }, 
+                body: data
+            }).then((response) => {
+                if (response.status <= 210) alert("The post was uploaded");
+                else {
+                    alert("Image updating has been canceled by some reasons");
+                }
+            }); 
+        } else upfilename = '';
+        /*{
+            if (response.status <= 210) alert("The post was uploaded");
             else {
                 alert("Image updating has been canceled by some reasons");
             }
-        }); 
+        } */
     }
 
     handleFormSubmit(e) {
-        this.createImage();
+        this.createPost();
         this.setState({
             title: "", 
             content: "", 
-            subject: ""
+            subject: "", 
+            filename: "", 
+            foldername: "", 
+            open: false
         });
     }
     
@@ -80,7 +119,10 @@ class CreateImage extends React.Component {
         this.setState({
             title: "", 
             content: "", 
-            subject: ""
+            subject: "", 
+            filename: "", 
+            foldername: "", 
+            open: false
         });
     }
     
@@ -92,32 +134,23 @@ class CreateImage extends React.Component {
                 Write
             </Button>
             <Dialog open={this.state.open} onClose={this.handleClose}>
-                <DialogTitle>Create Image</DialogTitle>
+                <DialogTitle>Write posts</DialogTitle>
+                <form onSubmit={this.handleFormSubmit}>
                     <DialogContent>
-                        <form onSubmit={this.handleFormSubmit}>
-                        <TextField label="Title" type="text" name="image_name" style={{width:600}} value={this.state.title} error={!this.state.title} onChange={this.handleValueChange} margin="normal"/><br/>
-                        <TextField label="Content" type="number" name="min_ram" style={{width:600}} multiline value={this.state.Content} error={!this.state.title} onChange={this.handleValueChange} margin="normal"/><br/>
-                        <TextField label="image" type="text" select onChange={this.handleValueChange} style={{width:600}} required name="image" SelectProps={{
-                                MenuProps: {
-                                  className: classes.menu,
-                                }
-                            }} value={this.state.disk_format} onChange={this.handleValueChange} margin="normal"> 
-                            {this.state.format_list.map((format) => (
-                                <MenuItem key={format} style={{width:240}} value={format}>
-                                {format}
-                                </MenuItem>
-                            ))}
-                        </TextField><br/>
-                        <input type="file" name="file" id="file" accept="*" ref={(ref) => { this.uploadInput = ref; }} value={this.state.file} onChange={this.handleValueChange} /><br/><br/>
-                        </form>
+                            <TextField label="title" type="text" name="title" style={{width:500}} value={this.state.title} error={!this.state.title} onChange={this.handleValueChange} margin="normal"/><br/>
+                            <TextField label="content" type="text" name="content" style={{width:500}} multiline rows={10} value={this.state.content} error={!this.state.content} onChange={this.handleValueChange} margin="normal"/><br/><br/><br/>
+                            <input type="file" name="file" id="file" accept="*" ref={(ref) => { this.uploadInput = ref; }} onChange={this.handleValueChange} />
                     </DialogContent>
-                <DialogActions>
-                <Button variant="contained" color="primary" onClick={this.createPost}>OK</Button>
-                <Button variant="outlined" color="primary" onClick={this.handleClose}>Close</Button>
-                </DialogActions>
+                    <DialogActions>
+                        <Button variant="contained" color="primary" onClick={this.handleFormSubmit}>OK</Button>
+                        <Button variant="outlined" color="primary" onClick={this.handleClose}>Close</Button>
+                    </DialogActions>
+                </form>
             </Dialog>
         </div>
         );
+        // type="submit" 
+        // </form>
     }
 }    
-export default withStyles(styles)(CreateImage);
+export default withStyles(styles)(CreateThread);

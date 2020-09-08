@@ -125,6 +125,8 @@ def getStackStatus(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_id:
     return stack_info
 
 
+## image 관련 부분
+
 def getImageList(X_AUTH_TOKEN: str):
     rHeaders = {
         'Content-Type': 'application/json',
@@ -139,6 +141,26 @@ def getImageList(X_AUTH_TOKEN: str):
     imageInfo = resultJson.get("images", [])
 
     return imageInfo
+
+def createImageInfo(X_AUTH_TOKEN :str, disk_format: str, min_disk: str, min_ram: str, name: str):
+    rHeaders = {
+        "X-Auth-Token": X_AUTH_TOKEN
+    }
+    rBody = {
+        "container_format": "bare",
+        "disk_format": disk_format,
+        "name": name, 
+        "min_disk": min_disk, 
+        "min_ram": min_ram
+    }
+
+    url = localhost + "/image/v2/images"
+    requestResult = requests.post(url, headers=rHeaders, data=json.dumps(rBody))
+    requestResult.raise_for_status()
+    resultJson = requestResult.json()
+    fileuploadurl = localhost + "/image" + resultJson.get('file', None)
+
+    return fileuploadurl
 
 def deleteImage(X_AUTH_TOKEN: str, image_id):
     rHeaders = {
@@ -305,3 +327,31 @@ def enrollStudent(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_id: 
     lecture_sign_up_list.close()
 
     return getInstanceConsole(X_AUTH_TOKEN, instance_id)
+
+def uploadFile(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: str, filename: str, content):
+    url = "%s:8080/v1/AUTH_%s/%s/%s/%s" % (localhost, tenant_id, student_id, foldername, filename)
+    rHeader = { 'X-Auth-Token': X_AUTH_TOKEN }
+
+    result = requests.put(url, headers=rHeader, data=content)
+    result.raise_for_status()
+
+def uploadPost(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: str, filename: str, title:str, content: str, upload_filename: str):
+    uploadFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, filename, content)
+
+    lecture_sign_up_list = pymysql.connect(
+        user='root',
+        passwd='8nkujc3rf',
+        host='localhost',
+        db='lecture_sign_up_list',
+        charset='utf8'
+    )
+
+    cursor = lecture_sign_up_list.cursor(pymysql.cursors.DictCursor)
+    query = '''insert into threads(title, content, filename, foldername, student_id) values('%s', '%s', '%s', '%s', '%s')''' % (title, filename, upload_filename, foldername, student_id)
+    cursor.execute(query)
+
+    lecture_sign_up_list.commit()
+    lecture_sign_up_list.close()
+
+    print({ 'filename': upload_filename, 'foldername': foldername })
+    return { 'filename': upload_filename, 'foldername': foldername }

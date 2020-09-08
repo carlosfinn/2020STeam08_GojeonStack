@@ -30,6 +30,7 @@ import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
 import HeatApi from "components/Openstack.jsx";
 import CreateStack from "components/Dialog/CreateStack.jsx";
+import CreateThread from "components/Dialog/CreateThread.jsx";
 import withStyles from "@material-ui/core/styles/withStyles";
 import PropTypes from "prop-types";
 
@@ -122,6 +123,7 @@ class Dashboard extends React.Component {
                 </p>
               </CardHeader>
               <CardBody>
+                <CreateThread tenant_id={this.state.tenant_id} token={this.state["X-Auth-Token"]} student_id={this.state.student_id} />
               </CardBody>
             </Card>
           </GridItem>
