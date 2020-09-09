@@ -37,6 +37,15 @@ def login():
     #token,userId = auth.getToken(id,pw)
     scopedToken, userId = auth.getScopedToken(id, pw, 'admin')
     projectId = '1ec98e5f0ec24969ab19e4e74c3b66ba'
+    if id == 'admin':
+        jsonResult = {
+            'token': scopedToken,
+            'role': 'Teacher',
+            'tenant_id': projectId,
+            'student_id': id,
+            'loginResult': True            
+        }
+    
     role = auth.listUsers(scopedToken, userId)
     print(role)
     jsonResult = {
