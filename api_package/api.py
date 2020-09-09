@@ -96,14 +96,16 @@ def startDB():
 
     cursor = lecture_sign_up_list.cursor(pymysql.cursors.DictCursor)
     cursor.execute(
-        '''create table threads(id int(16) not null, title varchar(255) not null, content varchar(255) not null, filename varchar(255), foldername varchar(255) not null, student_id varchar(255) not null);'''
+        '''create table threads(id int(16) not null auto_increment primary key, title varchar(255) not null, content varchar(255) not null, filename varchar(255), foldername varchar(255) not null, student_id varchar(255) not null);'''
     )
-    cursor.excecute(
+    cursor.execute(
         '''create table sign_up_list (lecture_id varchar(255) not null, student_id varchar(255) not null, lecture_order int(16) unsigned not null, vm_id varchar(255) not null);'''
     )
     
     lecture_sign_up_list.commit()
     lecture_sign_up_list.close()
+
+    return {}
 
 def deleteStack(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_id: str):
     lecture_sign_up_list = pymysql.connect(
@@ -354,6 +356,14 @@ def uploadFile(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: s
 
     result = requests.put(url, headers=rHeader, data=content)
     result.raise_for_status()
+
+def fetchFile(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: str, filename: str):
+    url = localhost + ":8080/v1/AUTH_%s/%s/%s/%s" % (tenant_id, student_id, foldername, filename)
+    print(url)
+    rHeader = { 'X-Auth-Token': X_AUTH_TOKEN }
+
+    result = requests.get(url, headers=rHeader)
+    return result
 
 def uploadPost(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: str, filename: str, title:str, content: str, upload_filename: str):
     uploadFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, filename, content)

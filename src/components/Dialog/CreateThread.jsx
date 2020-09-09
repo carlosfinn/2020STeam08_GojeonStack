@@ -55,7 +55,8 @@ class CreateThread extends React.Component {
         const url = 'http://164.125.70.19:16384/api/board/thread';
         const data = new FormData();
         data.append('file', this.uploadInput.files[0]);
-        console.log(data);
+
+        const fileexists = this.uploadInput.files.length != 0;
 
         let upfilename = '';
         if (this.uploadInput.files[0]) upfilename = this.uploadInput.files[0].name
@@ -77,7 +78,7 @@ class CreateThread extends React.Component {
         const Response = await fetch(url, request);
         const FileInfo = await Response.json();
 
-        if (this.uploadInput.files[0]) {
+        if (fileexists){    
             fetch('http://164.125.70.19:16384/api/board/file', {
                 method: 'POST', 
                 headers: {
@@ -90,11 +91,12 @@ class CreateThread extends React.Component {
                 body: data
             }).then((response) => {
                 if (response.status <= 210) alert("The post was uploaded");
-                else {
-                    alert("Image updating has been canceled by some reasons");
-                }
-            }); 
-        } else upfilename = '';
+                else alert("Posting has been canceled by some reasons");
+            });
+        } else {
+            if (Response.status <= 210) alert("The post was uploaded");
+            else alert("Posting has been canceled by some reasons");
+        }
         /*{
             if (response.status <= 210) alert("The post was uploaded");
             else {

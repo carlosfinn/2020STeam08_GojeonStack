@@ -31,6 +31,7 @@ import CardFooter from "components/Card/CardFooter.js";
 import HeatApi from "components/Openstack.jsx";
 import CreateStack from "components/Dialog/CreateStack.jsx";
 import CreateThread from "components/Dialog/CreateThread.jsx";
+import ReadThread from "components/Dialog/ReadThread.jsx";
 import withStyles from "@material-ui/core/styles/withStyles";
 import PropTypes from "prop-types";
 
@@ -51,8 +52,8 @@ class Dashboard extends React.Component {
     super(props);
     console.log(this.props);
     this.state = {
-      "X-Auth-Token": "gAAAAABfV3JHy-vZJbfIfN5xbNgO5zuTcRkvwsMse5-PnWR6RYBtLBgPkZmkEriNNZBry9n_7kMvN3nWL8xAQSOR2Ps5i0EO5N1jxA73-0N7hodXfRwklBIMyxsRurWOxyCdxNTDketNE0U3m90084iLOFbAtYE4oSIrkAFl1jYrVHyooBXH1NM", 
-      tenant_id: "c6d6b85938224e3ba6879d07e77fb4ce", 
+      "X-Auth-Token": "gAAAAABfV5_hh7uzoc54Oicpt2I-wKCTLPmrdD5_ELj7xGW-h_XmzMAex2vp2KzS5kF1aTkmKsbuxQTfgd6hiRCV-HdxUktMlEnjvLjghvjy-bTgdHLlPfNC_OSv2K2NpmpTMOyr79OglUstRUQ-pj9u-mjH5PyHmPXWvnHnULCLfaogPfOjalE", 
+      tenant_id: "1ec98e5f0ec24969ab19e4e74c3b66ba", 
       role: "Teacher", 
       student_id: "Baldi"
     }
@@ -124,6 +125,8 @@ class Dashboard extends React.Component {
               </CardHeader>
               <CardBody>
                 <CreateThread tenant_id={this.state.tenant_id} token={this.state["X-Auth-Token"]} student_id={this.state.student_id} />
+                <ReadThread thread_id={10} tenant_id={this.state.tenant_id} token={this.state["X-Auth-Token"]} student_id={this.state.student_id} 
+                content="e2fe5a68-0dc2-43fd-b3a8-20c712ec27fc" filename="2020-09-05 21.00.12 2391484689938868176_8505683794.jpg" title="test" foldername="5c26bd98-8a85-4e81-bed7-8ae18dfd37ed" />
               </CardBody>
             </Card>
           </GridItem>

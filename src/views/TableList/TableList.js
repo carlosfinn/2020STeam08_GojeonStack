@@ -49,9 +49,9 @@ class TableList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      "X-Auth-Token": "gAAAAABfV3JHy-vZJbfIfN5xbNgO5zuTcRkvwsMse5-PnWR6RYBtLBgPkZmkEriNNZBry9n_7kMvN3nWL8xAQSOR2Ps5i0EO5N1jxA73-0N7hodXfRwklBIMyxsRurWOxyCdxNTDketNE0U3m90084iLOFbAtYE4oSIrkAFl1jYrVHyooBXH1NM", 
+      "X-Auth-Token": "gAAAAABfV5_hh7uzoc54Oicpt2I-wKCTLPmrdD5_ELj7xGW-h_XmzMAex2vp2KzS5kF1aTkmKsbuxQTfgd6hiRCV-HdxUktMlEnjvLjghvjy-bTgdHLlPfNC_OSv2K2NpmpTMOyr79OglUstRUQ-pj9u-mjH5PyHmPXWvnHnULCLfaogPfOjalE", 
       token: null,
-      tenant_id: "c6d6b85938224e3ba6879d07e77fb4ce", 
+      tenant_id: "1ec98e5f0ec24969ab19e4e74c3b66ba", 
       role: "Teacher", 
       student_id: "Baldi", 
       images: []
@@ -87,7 +87,7 @@ class TableList extends React.Component {
 
     for (var i=0; i<test.length; i++) {
       console.log()
-      const id = test[i][5];
+      const id = test[i][6];
       const token = this.state['X-Auth-Token'];
 
       let deletebutton = <Button variant="contained" color="primary" onClick={function(event) {
@@ -128,7 +128,7 @@ class TableList extends React.Component {
             <CardBody>
               <Table
                 tableHeaderColor="primary"
-                tableHead={["Name", "Minimun RAM (MB)", "Minimum Disk (GB)", "Disk Format", "Status", "Image_id", "Delete"]}
+                tableHead={["Name", "Minimun RAM (MB)", "Minimum Disk (GB)", "Disk Format", "Status", "Image Size (MB)", "Image_id", "Delete"]}
                 tableData={this.state.images}
               />
             </CardBody>

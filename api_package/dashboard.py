@@ -113,7 +113,6 @@ def listImage():
     requestHeader = request.headers
     X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
 
-    print(X_AUTH_TOKEN)
     result = api.getImageList(X_AUTH_TOKEN)
 
     return json.dumps(result)
@@ -127,7 +126,7 @@ def tableImage():
     image_table = list()
 
     for image in result: 
-        image_info = [ image.get("name", ""), image.get("min_ram", 0), image.get("min_disk", 0), image.get("disk_format", ""), image.get("status", ""), image.get("id", "") ]
+        image_info = [ image.get("name", ""), image.get("min_ram", 0), image.get("min_disk", 0), image.get("disk_format", ""), image.get("status", ""), image.get("size", "") / (1024 *1024), image.get("id", "") ]
         image_table.append(image_info)
 
     return json.dumps(image_table)
@@ -207,7 +206,7 @@ def enroll():
 
     return json.dumps(api.enrollStudent(X_AUTH_TOKEN, tenant_id, stack_name, stack_id, student_id))
 
-@app.route('/api/board/thread', methods=['POST', 'GET'])
+@app.route('/api/board/thread', methods=['POST'])
 def boardWrite():
     requestHeader = request.headers
     requestBody = json.loads(request.get_data())
@@ -218,12 +217,11 @@ def boardWrite():
 
     filename = requestBody.get("filename", None)
 
-    if request.method == 'POST':
-        title = requestBody.get("title", None)
-        content = requestBody.get("content", None)
-        result = api.uploadPost(X_AUTH_TOKEN, student_id, tenant_id, str(uuid.uuid4()), str(uuid.uuid4()), title, content, filename)
-        print(result)
-        return json.dumps(result)
+    title = requestBody.get("title", None)
+    content = requestBody.get("content", None)
+    result = api.uploadPost(X_AUTH_TOKEN, student_id, tenant_id, str(uuid.uuid4()), str(uuid.uuid4()), title, content, filename)
+    print(result)
+    return json.dumps(result)
 
 @app.route('/api/board/file', methods=['POST', 'GET'])
 def uploadFile():
@@ -235,7 +233,6 @@ def uploadFile():
     filename = requestHeader.get("filename", None)
     foldername = requestHeader.get("foldername", None)
 
-    filename = ''
     if request.method == 'POST':
         # check if the post request has the file part
         print(request.files)
@@ -250,18 +247,37 @@ def uploadFile():
         if file:
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
 
-    filedir = UPLOAD_FOLDER + '/' + filename
-    fbuffer = open(filedir, 'rb')
-    api.uploadFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, filename, fbuffer.read())
-    fbuffer.close()
+        filedir = UPLOAD_FOLDER + '/' + filename
+        fbuffer = open(filedir, 'rb')
+        api.uploadFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, filename, fbuffer.read())
+        fbuffer.close()
+        os.system('rm '+filedir)
+        return {}
+    else: 
+        print(filename)
+        result = api.fetchFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, filename)
+        return Response(result, content_type="application/octet-stream")
 
-    os.system('rm '+filedir)
+@app.route('/api/board/fetchpost', methods=['GET'])
+def fetchPost():
+    requestHeader = request.headers
 
-    return {}
+    X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
+    student_id = requestHeader.get("student_id", None)
+    tenant_id = requestHeader.get("tenant_id", None)
+    filename = requestHeader.get("filename", None)
+    foldername = requestHeader.get("foldername", None)
+    
+    result = api.fetchFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, filename)
+    print(result.text)
+
+    return result.text
+
+
 
 @app.route('/dbinit', methods=['POST'])
 def dbinit():
-    api.startDB()
+    return json.dumps(api.startDB())
 
 @app.route('/api/board/test', methods=['GET'])
 def filetest():
