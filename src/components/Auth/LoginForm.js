@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Router, Switch, Route, Link, Redirect } from 'react-router-dom';
-import { createBrowserHistory } from "history";
+import { Link, Redirect } from 'react-router-dom';
 import Button from '../../styles/Button';
 import palette from '../../styles/palette';
 
-import Admin from "layouts/Admin.js";
-import Dashboard from "views/Dashboard/Dashboard.js";
 
 
 const AuthFormBlock = styled.div`
@@ -51,17 +48,22 @@ const ButtonWithMarginTop = styled(Button)`
     margin-top: 1rem;
 `;
 
-const hist = createBrowserHistory();
+
 
 class LoginForm extends Component {
     constructor(props) {
         super(props);
+        
         this.state = {
             id: '',
             pw: '',
-            token: null, 
+            token: null,
+            tenant_id: null,
+            student_id: null,
+            role: null,
             loginresult: {}
         }
+        
     }
 
     handleChange = (e) => {
@@ -76,7 +78,7 @@ class LoginForm extends Component {
             id: this.state.id,
             pw: this.state.pw
         };
-        fetch("http://0.0.0.0:5000/login",{
+        fetch("http://0.0.0.0:16384/login",{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -87,12 +89,18 @@ class LoginForm extends Component {
             .then(responseData => {
                 if(responseData.loginResult) {
                     this.setState({
-                        token: responseData.token
+                        token: responseData.token,
+                        tenant_id: responseData.tenant_id,
+                        student_id: responseData.student_id,
+                        role: responseData.role
                     });
                     console.log(this.state.token);
+                    
+        
                 }
                 else {
-                    //다시 로그인화면으로 
+                    //다시 로그인화면으로
+                    alert("ID와 비밀번호를 확인해주세요")
                 }
         });
         
@@ -102,31 +110,20 @@ class LoginForm extends Component {
     render() {
         if(this.state.token != null) {
             return (
-                // <Redirect
-                //     to={{
-                //         pathname: "/admin/dashboard",
-                //         state: {
-                //             token: this.state.token
-                //         }
+                <Redirect
+                    to={{
+                        pathname: "/admin/dashboard",
+                        state: {
+                            token: this.state.token,
+                            tenant_id: this.state.tenant_id,
+                            student_id: this.state.student_id,
+                            role: this.state.role
+
+                        }
                                 
-                //     }}
-                // />
-                <Router history={hist}>
-                    <Switch>
-                        <Route path="/admin" component={Admin} />
-                        <Route path="/admin/dashboard" component={Dashboard} />
-                        <Redirect 
-                            to={{
-                                pathname: "/admin/dashboard",
-                                state: {
-                                    token: this.state.token
-                                }    
-                            }}
-                        />
-                    </Switch>
-                </Router>
+                    }}
+                />
                 
-              
             );
         }
         return (
@@ -146,75 +143,3 @@ class LoginForm extends Component {
 }
 
 export default LoginForm;
-// const LoginForm = () => {
-//     const [form, setForm] = useState({
-//         id: '',
-//         pw: '',
-//     });
-//     const { id, pw } = form;
-//     const [token, setToken] = useState('');
-    
-//     const onChange = e => {
-//         const nextForm = {
-//             ...form,
-//             [e.target.name]: e.target.value
-//         };
-//         setForm(nextForm);
-//     };
-
-//     const onSubmit = e => {
-//         e.preventDefault();
-//         setForm({
-//             id: this.state.id,
-//             pw: this.state.pw
-//         });
-
-//         fetch("http://0.0.0.0:5000/login",{
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json'
-//             },
-//             body: JSON.stringify(form)
-//         })
-//             .then(response => response.json())
-//             .then(responseData => {
-//                 if(responseData.loginResult) {
-//                     setToken(responseData.token);
-//                 }
-//                 else {
-//                     //다시 로그인화면으로 
-//                 }
-//             });
-
-//     }
-
-//     if(token != null) {
-//         return (
-//             <Redirect
-//                 to={{
-//                     pathname: "/main",
-//                     state: {
-
-//                     }
-                    
-//                 }}
-//             />
-//         );
-//     }
-//     return (
-//         <AuthFormBlock>
-//             <h3>로그인</h3>
-//             <form onSubmit={onSubmit}>
-//                 <StyledInput onChange={onChange} value={id} autoComplete="username" name="username" placeholder="id" />
-//                 <StyledInput onChange={onChange} value={pw} autoComplete="new-password" name="password" placeholder="pw" type="password" />
-//                 <ButtonWithMarginTop fullWidth cyan>로그인</ButtonWithMarginTop>
-//             </form>
-//             <Footer>
-//                 <Link to="/register">회원가입</Link>
-//             </Footer>
-//         </AuthFormBlock>
-            
-//     );
-// };
-
-//export default LoginForm;

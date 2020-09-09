@@ -22,6 +22,15 @@ const appStyle = theme => ({
     width: "100%",
     overflowScrolling: "touch"
   },
+  authPanel: {
+    overflow: "auto",
+    position: "relative",
+    float: "right",
+    ...transition,
+    maxHeight: "100%",
+    width: "100%",
+    overflowScrolling: "touch"
+  },
   content: {
     marginTop: "70px",
     padding: "30px 15px",

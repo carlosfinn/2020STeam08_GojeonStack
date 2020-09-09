@@ -52,7 +52,7 @@ class Dashboard extends React.Component {
     super(props);
     console.log(this.props);
     this.state = {
-      "X-Auth-Token": "gAAAAABfV5_hh7uzoc54Oicpt2I-wKCTLPmrdD5_ELj7xGW-h_XmzMAex2vp2KzS5kF1aTkmKsbuxQTfgd6hiRCV-HdxUktMlEnjvLjghvjy-bTgdHLlPfNC_OSv2K2NpmpTMOyr79OglUstRUQ-pj9u-mjH5PyHmPXWvnHnULCLfaogPfOjalE", 
+      "X-Auth-Token": this.props.location.state.token, 
       tenant_id: "1ec98e5f0ec24969ab19e4e74c3b66ba", 
       role: "Teacher", 
       student_id: "Baldi"
