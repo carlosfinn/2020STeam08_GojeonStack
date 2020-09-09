@@ -79,7 +79,7 @@ class RegisterForm extends Component {
 
     handleStudentClick = (e) => {
         this.setState({
-            role: "student",
+            role: "Student",
             studentButtonStyle: !this.state.studentButtonStyle,
             teacherButtonStyle: true
         });
@@ -88,7 +88,7 @@ class RegisterForm extends Component {
 
     handleTeacherClick = (e) => {
         this.setState({
-            role: "teacher",
+            role: "Teacher",
             teacherButtonStyle: !this.state.teacherButtonStyle,
             studentButtonStyle: true
         });

@@ -13,10 +13,10 @@ def getToken(id,pw):
                     ],
                     "password": {
                         "user": {
+                            "name": id,
                             "domain": {
-                                "name": "default"
+                                "name": "Default"
                             },
-                            "name": id, 
                             "password": pw
                         }
                     }
@@ -46,46 +46,53 @@ def getToken(id,pw):
 
     return token, userId
 
-def getScopedToken(token, userId, pw):
+def getScopedToken(id, pw, projectName):
     body = \
-        {
-            "auth": {
-                "identity": {
-                    "methods": [
-                        "password"
-                    ],
+        { 
+            "auth": { 
+                "identity": { 
+                    "methods": ["password"],
                     "password": {
                         "user": {
-                            "id": userId,
+                            "domain": {
+                                "name": "default"
+                            },
+                            "name": id, 
                             "password": pw
-                        }
-                    }
-                },
-                "scope": {
-                    "system": {
-                        "all": True
-                    }
-                }
-            }
+                        } 
+                    } 
+                }, 
+                "scope": { 
+                    "project": { 
+                        "domain": { 
+                            "name": "default" 
+                        }, 
+                        "name":  projectName 
+                    } 
+                } 
+            } 
         }
         
     
     header = {
         'Content-Type': 'application/json',
-        'X-Auth-Token': token
+        
     }
 
     result = requests.post(url_base + '/identity/v3/auth/tokens', headers=header, data=json.dumps(body), verify=True)
     
     token = result.headers['X-Subject-Token']
+    resultJson = result.json()
+    userId = resultJson['token']['user']['id']
 
-    return token
+    return token, userId
 
  
-def createUser(token, project_id, name, pw, email):
+def createUser(token, project_id, name, pw, email, description):
     body = \
         {
             "user": {
+                "description": description,
                 "domain_id": "default",
                 "default_project_id": project_id,
                 "enabled": True,
@@ -110,14 +117,39 @@ def createUser(token, project_id, name, pw, email):
     resultJson = result.json()
     if int(resultCode) == 201:
         user_id = resultJson['user']['id']
+        
     if int(resultCode) == 409:
         user_id = resultJson['error']['title']
+        
     # for x in userList:
     #     user_id = x['id']
     #     break
     #user_id = [ x['id'] for x in resultJson['user'] if not x['id'] == "None"]
 
     return user_id
+
+def listUsers(token, userId):
+    url = url_base + "/identity/v3/users"
+
+    header = {
+        'Content-Type': 'application/json',
+        'X-Auth-Token': token
+    }
+
+    result = requests.get(url, headers=header)
+    resultJson = result.json()
+    role = ""
+    userList = resultJson['users']
+    userInfo = next((item for item in userList if item['id']==userId), None)
+    role = userInfo['description']
+    # for x in userList:
+    #     if x['id'] == userId:
+    #         role = x['description']
+    #     break
+    return role
+
+
+    
 
 def assignRoletoUser(token, project_id, user_id, role_id):
     url = url_base + "/identity/v3/projects/" + project_id + "/users/" + user_id + "/roles/" + role_id
