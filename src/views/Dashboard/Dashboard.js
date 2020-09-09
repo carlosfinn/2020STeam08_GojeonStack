@@ -125,7 +125,7 @@ class Dashboard extends React.Component {
               </CardHeader>
               <CardBody>
                 <CreateThread tenant_id={this.state.tenant_id} token={this.state["X-Auth-Token"]} student_id={this.state.student_id} />
-                <ReadThread thread_id={10} tenant_id={this.state.tenant_id} token={this.state["X-Auth-Token"]} student_id={this.state.student_id} 
+                <ReadThread thread_id={10} tenant_id={this.state.tenant_id} token={this.state["X-Auth-Token"]} student_id="Baldi"
                 content="e2fe5a68-0dc2-43fd-b3a8-20c712ec27fc" filename="2020-09-05 21.00.12 2391484689938868176_8505683794.jpg" title="test" foldername="5c26bd98-8a85-4e81-bed7-8ae18dfd37ed" />
               </CardBody>
             </Card>

@@ -13,10 +13,10 @@ def getToken(id,pw):
                     ],
                     "password": {
                         "user": {
-                            "name": id,
                             "domain": {
-                                "name": "Default"
+                                "name": "default"
                             },
+                            "name": id, 
                             "password": pw
                         }
                     }

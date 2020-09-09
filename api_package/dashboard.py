@@ -245,9 +245,12 @@ def tableImage():
 
     result = api.getImageList(X_AUTH_TOKEN)
     image_table = list()
+    ##print(result)
 
     for image in result: 
-        image_info = [ image.get("name", ""), image.get("min_ram", 0), image.get("min_disk", 0), image.get("disk_format", ""), image.get("status", ""), image.get("size", "") / (1024 *1024), image.get("id", "") ]
+        img_size = image.get("size", 0)
+        if not img_size: img_size = 0
+        image_info = [ image.get("name", ""), image.get("min_ram", 0), image.get("min_disk", 0), image.get("disk_format", ""), image.get("status", ""), img_size / (1024 *1024), image.get("id", "") ]
         image_table.append(image_info)
 
     return json.dumps(image_table)
@@ -270,21 +273,21 @@ def createImage():
         print(request.files)
         if 'file' not in request.files:
             flash('No file part')
-        file = request.files['file']
-        filename = file.filename
+        uploadfile = request.files['file']
+        filename = uploadfile.filename
         # if user does not select file, browser also
         # submit an empty part without filename
-        if file.filename == '':
+        if uploadfile.filename == '':
             flash('No selected file')
-        if file:
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
+        if uploadfile:
+            uploadfile.save(os.path.join(app.config['UPLOAD_FOLDER'], uploadfile.filename))
 
     filedir = UPLOAD_FOLDER + '/' + filename
-    upload_command = '''curl -i -X PUT -H "X-Auth-Token: %s" -H "Content-Type: application/octet-stream" -d %s %s''' \
+    upload_command = '''curl -i -X PUT -H "X-Auth-Token: %s" -H "Content-Type: application/octet-stream" -d @%s %s''' \
         % (X_AUTH_TOKEN, filedir, uploadurl)
     print(upload_command)
     os.system(upload_command)
-    os.system('rm '+filedir)
+    ##os.system('rm '+filedir)
     
     return {}
 

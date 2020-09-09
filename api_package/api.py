@@ -181,6 +181,7 @@ def createImageInfo(X_AUTH_TOKEN :str, disk_format: str, min_disk: str, min_ram:
     requestResult.raise_for_status()
     resultJson = requestResult.json()
     fileuploadurl = localhost + "/image" + resultJson.get('file', None)
+    print(resultJson)
 
     return fileuploadurl
 
@@ -363,6 +364,7 @@ def fetchFile(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: st
     rHeader = { 'X-Auth-Token': X_AUTH_TOKEN }
 
     result = requests.get(url, headers=rHeader)
+    result.raise_for_status()
     return result
 
 def uploadPost(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: str, filename: str, title:str, content: str, upload_filename: str):

@@ -111,7 +111,7 @@ class TableList extends React.Component {
           }
       });;
       }}>DELETE</Button>;
-      test[i][6] = deletebutton;
+      test[i][7] = deletebutton;
     }
 
     return (
