@@ -78,7 +78,7 @@ class LoginForm extends Component {
             id: this.state.id,
             pw: this.state.pw
         };
-        fetch("http://0.0.0.0:16384/login",{
+        fetch("http://164.125.70.19:16384/login",{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
