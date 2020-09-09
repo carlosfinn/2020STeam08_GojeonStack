@@ -35,38 +35,52 @@ def login():
     # id = 'tacher_user'
     # pw = 'test'
     token,userId = auth.getToken(id,pw)
-    print(token)
-    
-    if token is None:
-        jsonResult = {
-            'loginResult': False,
-            'user': userId
-        }
-        resJson = json.dumps(jsonResult)
-        return resJson
-        
-    # jsonResult = {
-    #         'token': token,
-    #         'loginResult': True
-    #     }
-    projectId, projectName = auth.getProjectId(token)
-    if projectName == 'studentproject':
-        jsonResult = {
-            'token': token,
-            'role': 'Student',
-            'tenant_id': projectId,
-            'student_id': id,
-            'loginResult': True
+    if id == 'admin':
+        scopedToken = auth.getScopedToken(token, userId, pw)
+        if scopedToken is None:
+            jsonResult = {
+                'loginResult': False,
+                
+            }
+            resJson = json.dumps(jsonResult)
+            return resJson
             
-        }
-    if projectName == 'teacherproject':
+        AdminProjectId, AdminProjectName = auth.getProjectId(scopedToken)
         jsonResult = {
-            'token': token,
+            'token': scopedToken,
             'role': 'Teacher',
-            'tenant_id': projectId,
+            'tenant_id': AdminProjectId,
             'student_id': id,
-            'loginResult': True
+            'loginResult': True            
         }
+
+    else:
+        if token is None:
+            jsonResult = {
+                'loginResult': False,
+                
+            }
+            resJson = json.dumps(jsonResult)
+            return resJson
+        
+        projectId, projectName = auth.getProjectId(token)
+        if projectName == 'studentproject':
+            jsonResult = {
+                'token': token,
+                'role': 'Student',
+                'tenant_id': projectId,
+                'student_id': id,
+                'loginResult': True
+            
+            }
+        if projectName == 'teacherproject':
+            jsonResult = {
+                'token': token,
+                'role': 'Teacher',
+                'tenant_id': projectId,
+                'student_id': id,
+                'loginResult': True
+            }
     
     resJson = json.dumps(jsonResult)
     return resJson
