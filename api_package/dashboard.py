@@ -45,16 +45,16 @@ def login():
             'student_id': id,
             'loginResult': True            
         }
-    
-    role = auth.listUsers(scopedToken, userId)
-    print(role)
-    jsonResult = {
-        'token': scopedToken,
-        'role': role,
-        'tenant_id': projectId,
-        'student_id': id,
-        'loginResult': True            
-    }
+        
+    else:
+        role = auth.listUsers(scopedToken, userId)
+        jsonResult = {
+            'token': scopedToken,
+            'role': role,
+            'tenant_id': projectId,
+            'student_id': id,
+            'loginResult': True            
+        }
     
 
 
