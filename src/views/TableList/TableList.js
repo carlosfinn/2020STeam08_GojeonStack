@@ -51,9 +51,9 @@ class TableList extends React.Component {
     this.state = {
       "X-Auth-Token": this.props.location.state.token, 
       token: null,
-      tenant_id: "1ec98e5f0ec24969ab19e4e74c3b66ba", 
-      role: "Teacher", 
-      student_id: "Baldi", 
+      tenant_id: this.props.location.state.tenant_id, 
+      role: this.props.location.state.role, 
+      student_id: this.props.location.state.student_id, 
       images: []
     }
     this.updateInfo();

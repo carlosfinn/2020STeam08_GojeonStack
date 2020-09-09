@@ -103,10 +103,10 @@ class Dashboard extends React.Component {
                     path={prop.layout + prop.path}
                     component={prop.component}
                     key={key}
-                    token={this.props.location.state.token}
-                    tenant_id={this.props.location.state.tenant_id}
-                    student_id={this.props.location.state.student_id}
-                    role={this.props.location.state.role}
+                    // token={this.props.location.state.token}
+                    // tenant_id={this.props.location.state.tenant_id}
+                    // student_id={this.props.location.state.student_id}
+                    // role={this.props.location.state.role}
                   />
                 );
               }
@@ -157,6 +157,9 @@ class Dashboard extends React.Component {
             open={this.state.mobileOpen}
             color={this.state.color}
             token={this.props.location.state.token}
+            tenant_id={this.props.location.state.tenant_id}
+            student_id={this.props.location.state.student_id}
+            role={this.props.location.state.role}
             {...rest} />
           : null
         }
