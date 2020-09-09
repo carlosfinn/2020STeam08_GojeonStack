@@ -379,7 +379,7 @@ def uploadPost(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: s
     )
 
     cursor = lecture_sign_up_list.cursor(pymysql.cursors.DictCursor)
-    query = '''insert into threads(title, content, filename, foldername, student_id) values('%s', '%s', '%s', '%s', '%s')''' % (title, filename, upload_filename, foldername, student_id)
+    query = '''insert into threads(title, content, filename, foldername, student_id, written) values('%s', '%s', '%s', '%s', '%s', NOW())''' % (title, filename, upload_filename, foldername, student_id)
     cursor.execute(query)
 
     lecture_sign_up_list.commit()
@@ -387,3 +387,24 @@ def uploadPost(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: s
 
     print({ 'filename': upload_filename, 'foldername': foldername })
     return { 'filename': upload_filename, 'foldername': foldername }
+
+
+def fetchPost(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: str, filename: str, title:str, content: str, upload_filename: str):
+    uploadFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, filename, content)
+
+    lecture_sign_up_list = pymysql.connect(
+        user='root',
+        passwd='8nkujc3rf',
+        host='localhost',
+        db='lecture_sign_up_list',
+        charset='utf8'
+    )
+
+    cursor = lecture_sign_up_list.cursor(pymysql.cursors.DictCursor)
+    query = '''select * from threads'''
+    cursor.execute(query)
+
+    result = cursor.fetchall()
+    lecture_sign_up_list.close()
+
+    return result
