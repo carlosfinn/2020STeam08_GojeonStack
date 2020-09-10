@@ -443,7 +443,26 @@ def fetchPost():
 
     return result.text
 
+@app.route('/api/board/fetchall', methods=['GET'])
+def fetchAll():
+    results = api.fetchPost()
+    for result in results:
+        result['written'] = result['written'].strftime("%Y-%m-%d %H:%M")
+    return json.dumps(results)
 
+@app.route('/api/board/delete', methods=['DELETE'])
+def deletePost():
+    requestHeader = request.headers
+
+    X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
+    student_id = requestHeader.get("student_id", None)
+    tenant_id = requestHeader.get("tenant_id", None)
+    foldername = requestHeader.get("foldername", None)
+    post_id = requestHeader.get("post_id", None)
+
+    api.deletePost(X_AUTH_TOKEN, student_id, tenant_id, foldername, int(post_id))
+
+    return ''
 
 @app.route('/dbinit', methods=['POST'])
 def dbinit():

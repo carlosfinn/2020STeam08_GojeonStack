@@ -34,8 +34,10 @@ class ReadThread extends React.Component {
             foldername: this.props.foldername, 
             student_id: this.props.student_id, 
             tenant_id: this.props.tenant_id, 
+            date: this.props.written, 
             content: '',
-            "X-Auth-Token": this.props.token
+            "X-Auth-Token": this.props.token, 
+            deletable: this.props.deletable
         }
 
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
@@ -126,6 +128,22 @@ class ReadThread extends React.Component {
 
     deletePost() {
         const url = 'http://164.125.70.19:16384/api/board/delete';
+
+        const request = {
+            method: 'DELETE', 
+            headers: {
+                "X-Auth-Token": this.state["X-Auth-Token"], 
+                foldername: this.state.foldername, 
+                student_id: this.state.student_id, 
+                tenant_id: this.state.tenant_id, 
+                post_id: this.state.thread_id
+            }
+        }
+
+        fetch(url, request).then((response) => {
+            if (response.ok) alert("Deleted successfully");
+            else alert("Deletion Error");
+        })
     }
 
     handleFormSubmit(e) {
@@ -147,6 +165,11 @@ class ReadThread extends React.Component {
     
     render() {
         const { classes } = this.props;
+        let deleteButton;
+
+        if (this.state.deletable) deleteButton = <Button variant="contained" color="primary" onClick={this.handleFormSubmit}>Delete</Button>;
+        else deleteButton = null;
+
         return (
             <TableRow className={classes.tableBodyRow}>
                 <TableCell className={classes.tableCell}>
@@ -162,13 +185,16 @@ class ReadThread extends React.Component {
                                 <a onClick={this.downloadFile}>{this.state.filename}</a>
                             </DialogContent>
                         <DialogActions>
-                        <Button variant="contained" color="primary" onClick={this.deletePost}>Delete</Button>
-                        <Button variant="outlined" color="primary" onClick={this.handleClose}>Close</Button>
+                            {deleteButton}
+                            <Button variant="outlined" color="primary" onClick={this.handleClose}>Close</Button>
                         </DialogActions>
                     </Dialog>
                 </TableCell>
                 <TableCell className={classes.tableCell}>
                     {this.state.student_id}
+                </TableCell>
+                <TableCell className={classes.tableCell}>
+                    {this.state.date}
                 </TableCell>
             </TableRow>
         );

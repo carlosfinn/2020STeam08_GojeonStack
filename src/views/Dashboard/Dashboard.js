@@ -31,8 +31,8 @@ import CardFooter from "components/Card/CardFooter.js";
 import HeatApi from "components/Openstack.jsx";
 import CreateStack from "components/Dialog/CreateStack.jsx";
 import CreateThread from "components/Dialog/CreateThread.jsx";
-import ReadThread from "components/Dialog/ReadThread.jsx";
 import withStyles from "@material-ui/core/styles/withStyles";
+import PostTable from "components/PostTable.jsx";
 import PropTypes from "prop-types";
 
 import { bugs, website, server } from "variables/general.js";
@@ -55,8 +55,10 @@ class Dashboard extends React.Component {
       "X-Auth-Token": this.props.location.state.token, 
       tenant_id: this.props.location.state.tenant_id, 
       role: this.props.location.state.role, 
-      student_id: this.props.location.state.student_id
-    }
+      student_id: this.props.location.state.student_id, 
+      thread_list: []
+    };
+
   }
 
   render() {
@@ -66,6 +68,8 @@ class Dashboard extends React.Component {
     } else {
       teacherCreateMenu = null;
     }
+    const { thread_list } = this.state;
+
     return (
       <div>
         {teacherCreateMenu}<br/>
@@ -125,8 +129,7 @@ class Dashboard extends React.Component {
               </CardHeader>
               <CardBody>
                 <CreateThread tenant_id={this.state.tenant_id} token={this.state["X-Auth-Token"]} student_id={this.state.student_id} />
-                <ReadThread thread_id={10} tenant_id={this.state.tenant_id} token={this.state["X-Auth-Token"]} student_id="Baldi"
-                content="e2fe5a68-0dc2-43fd-b3a8-20c712ec27fc" filename="2020-09-05 21.00.12 2391484689938868176_8505683794.jpg" title="test" foldername="5c26bd98-8a85-4e81-bed7-8ae18dfd37ed" />
+                <PostTable tenant_id={this.state.tenant_id} token={this.state["X-Auth-Token"]} student_id={this.state.student_id} role={this.state.role} />
               </CardBody>
             </Card>
           </GridItem>
