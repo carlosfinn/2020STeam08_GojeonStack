@@ -342,6 +342,7 @@ def enrollStudent(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_id: 
             print(instance_id)
         else:
             next_instance = lecture_resources[current_count]
+            if current_count >= len(lecture_resources): return ''
             instance_id = next_instance.get("physical_resource_id", None)
             query = '''insert into sign_up_list(lecture_id, student_id, lecture_order, vm_id) values('%s', '%s', %d, '%s')''' % (stack_id, student_id, current_count, instance_id)
             cursor.execute(query)

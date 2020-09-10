@@ -84,24 +84,25 @@ class LoginForm extends Component {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(userInfo)
-        })
-            .then(response => response.json())
-            .then(responseData => {
-                if(responseData.loginResult) {
-                    this.setState({
-                        token: responseData.token,
-                        tenant_id: responseData.tenant_id,
-                        student_id: responseData.student_id,
-                        role: responseData.role
-                    });
-                    console.log(this.state.token);
-                    
-        
-                }
-                else {
-                    //다시 로그인화면으로
-                    alert("ID와 비밀번호를 확인해주세요")
-                }
+        }).then(response => {
+            if (response.ok) return response.json();
+            else {
+                alert("회원정보 오류");
+                return response.json();
+            }
+        }).then(responseData => {
+            if(responseData.loginResult) {
+                this.setState({
+                    token: responseData.token,
+                    tenant_id: responseData.tenant_id,
+                    student_id: responseData.student_id,
+                    role: responseData.role
+                });
+                console.log(this.state.token);
+            } else {
+                //다시 로그인화면으로
+                alert("ID와 비밀번호를 확인해주세요");
+            }
         });
         
     }

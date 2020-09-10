@@ -359,8 +359,6 @@ def getEnrolledInformation():
     stack_id = requestHeader.get("stack_id", None)
     student_id = requestHeader.get("student_id", None)
     info = api.getEnrolledInfo(student_id, stack_id)
-    print("등록정보 확인 부분")
-    print(info)
 
     return json.dumps({"enrolled": info != None})
 

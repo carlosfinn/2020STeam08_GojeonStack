@@ -43,9 +43,13 @@ class StackInfo extends React.Component {
       enrolleddata: {}, 
       studentconsole: {}
     }
-
-    this.getConsoleLink.bind(this);
-    this.getConsoleLink();
+    
+    this.checkEnrolled();
+    if (this.state.enrolleddata.enrolled) this.enrollStudent();
+    this.interval = setInterval(() => {
+      this.checkEnrolled();
+      if (this.state.enrolleddata.enrolled) this.enrollStudent();
+    },1000);
   }
 
   getConsoleLink() {
@@ -78,9 +82,8 @@ class StackInfo extends React.Component {
     }));
   }
 
-  enrollStudent() {
+  enrollStudent = () => {
     const url = "http://164.125.70.19:16384/api/stack/enrollconsole";
-    const check_url = "http://164.125.70.19:16384/api/stack/getlectureoverstate";
 
     const request = {
       method: "POST", 
@@ -94,9 +97,13 @@ class StackInfo extends React.Component {
     }
 
     this.checkEnrolled();
-    if (!this.state.enrolleddata.enrolled) fetch(url, request).then((res) => res.json()).then((json) => this.setState({
-      studentconsole: json
-    }));
+    console.log(this.state.enrolleddata);
+    fetch(url, request).then((res) => res.json()).then((json) => {
+      if (json) this.setState({
+        studentconsole: json
+      });
+    });
+    console.log(this.state.studentconsole);
   }
 
   DeleteStack() {
@@ -128,14 +135,14 @@ class StackInfo extends React.Component {
 
     if (isStudent) {
       DeleteButton = <br/>;
-      this.checkEnrolled();
-      if (!this.state.enrolleddata.enrolled) LectureConsole = <Button variant="contained" color="primary" onClick={this.enrollStudent.bind(this)}>Take Lecture</Button>;
+      //this.checkEnrolled();
+      if (!this.state.enrolleddata.enrolled) LectureConsole = <Button variant="contained" color="primary" onClick={this.enrollStudent}>Take Lecture</Button>;
       else {
-        this.enrollStudent();
+        //this.enrollStudent();
         LectureConsole = <a href={this.state.studentconsole.url}>Go to console</a>;
       }
     } else {
-      DeleteButton = <Button variant="contained" color="primary" onClick={this.DeleteStack.bind(this)}>DELETE</Button>;
+      DeleteButton = <Button variant="contained" color="primary" onClick={this.DeleteStack}>DELETE</Button>;
       LectureConsole = null;
     }
 
