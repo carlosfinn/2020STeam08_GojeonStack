@@ -139,7 +139,7 @@ class RegisterForm extends Component {
                 .then(response => response.json())
                 .then(responseData => {
                     if(responseData.registerResult) {
-                        if(responseData.user === "teacher") {
+                        if(responseData.character === "Teacher") {
                             alert(this.state.role + '유저 회원가입 완료');
                             console.log(responseData.userID);
                             this.setState({
@@ -147,7 +147,7 @@ class RegisterForm extends Component {
                             });
                 
                         }
-                        else if(responseData.user === "student") {
+                        else if(responseData.character === "Student") {
                             alert(this.state.role + ' 유저 회원가입 완료');
                             console.log(responseData.userID)
                             this.setState({

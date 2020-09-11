@@ -45,7 +45,7 @@ def login():
             'student_id': id,
             'loginResult': True            
         }
-        
+
     else:
         role = auth.listUsers(scopedToken, userId)
         jsonResult = {
@@ -127,14 +127,15 @@ def register():
     projectId = '1ec98e5f0ec24969ab19e4e74c3b66ba'  #admin project
     role_id = 'e1cbeaa0ba144aa28dc7a47d0ee14a55'    #admin role
     
-    user = auth.createUser(scopedToken, projectId, name, pw, email, role)
+    user, character = auth.createUser(scopedToken, projectId, name, pw, email, role)
 
     auth.assignRoletoUser(scopedToken, projectId, user, role_id)
     jsonResult = {
         'registerResult': True,
         'name': name,
         'password': pw,
-        'userID': user
+        'userID': user,
+        'character': character
     }
 
     # if user == 'Conflict':

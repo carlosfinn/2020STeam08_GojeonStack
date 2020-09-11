@@ -117,16 +117,17 @@ def createUser(token, project_id, name, pw, email, description):
     resultJson = result.json()
     if int(resultCode) == 201:
         user_id = resultJson['user']['id']
-        
+        character = resultJson['user']['description']
     if int(resultCode) == 409:
         user_id = resultJson['error']['title']
+        character = None
         
     # for x in userList:
     #     user_id = x['id']
     #     break
     #user_id = [ x['id'] for x in resultJson['user'] if not x['id'] == "None"]
 
-    return user_id
+    return user_id, character
 
 def listUsers(token, userId):
     url = url_base + "/identity/v3/users"
