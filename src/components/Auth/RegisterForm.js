@@ -129,7 +129,7 @@ class RegisterForm extends Component {
             email: this.state.email
         };
         if(this.state.pwcheckError === "confirm") {
-            fetch("http://0.0.0.0:16384/register",{
+            fetch("http://164.125.70.19:16384/register",{
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

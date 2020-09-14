@@ -59,7 +59,7 @@ class PostTable extends React.Component {
     this.fetchPosts();
     this.interval = setInterval(() => {
       this.fetchPosts();
-    },5000);
+    },1000);
   }
 
   fetchPosts() {

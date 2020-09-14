@@ -40,6 +40,8 @@ class StackInfo extends React.Component {
       tenant_id: this.props.tenant_id, 
       role: this.props.role, 
       student_id: this.props.student_id, 
+      stack_id: this.props.stack_id, 
+      stack_name: this.props.stack_name, 
       enrolleddata: {}, 
       studentconsole: {}
     }
@@ -59,8 +61,8 @@ class StackInfo extends React.Component {
       headers: {
         "X-Auth-Token": this.state["X-Auth-Token"], 
         "tenant_id": this.state.tenant_id, 
-        "stack_id": this.props.stack_id, 
-        "stack_name": this.props.stack_name
+        "stack_id": this.state.stack_id, 
+        "stack_name": this.state.stack_name
       }
     }
 
@@ -74,7 +76,7 @@ class StackInfo extends React.Component {
     fetch(check_url, {
       method: 'GET', 
       headers: {
-        "stack_id": this.props.stack_id, 
+        "stack_id": this.state.stack_id, 
         "student_id": this.state.student_id
       }
     }).then((res) => res.json()).then((json) => this.setState({
@@ -98,8 +100,11 @@ class StackInfo extends React.Component {
 
     this.checkEnrolled();
     console.log(this.state.enrolleddata);
-    fetch(url, request).then((res) => res.json()).then((json) => {
-      if (json) this.setState({
+    fetch(url, request).then((res) => {
+      if (res.ok) return res.json();
+      else alert("수강신청 등록 에러");
+    }).then((json) => {
+      this.setState({
         studentconsole: json
       });
     });
@@ -108,12 +113,12 @@ class StackInfo extends React.Component {
 
   DeleteStack() {
     const url = "http://164.125.70.19:16384/api/stack/delete";
-    console.log(this.props.stack_id);
-    console.log(this.props.stack_name);
+    console.log(this.state.stack_id);
+    console.log(this.state.stack_name);
 
     const requestBody = {
-      stack_name: this.props.stack_name, 
-      stack_id: this.props.stack_id
+      stack_name: this.state.stack_name, 
+      stack_id: this.state.stack_id
     }
     const request = {
         method: 'DELETE', 
@@ -142,7 +147,7 @@ class StackInfo extends React.Component {
         LectureConsole = <a href={this.state.studentconsole.url}>Go to console</a>;
       }
     } else {
-      DeleteButton = <Button variant="contained" color="primary" onClick={this.DeleteStack}>DELETE</Button>;
+      DeleteButton = <Button variant="contained" color="primary" onClick={this.DeleteStack.bind(this)}>DELETE</Button>;
       LectureConsole = null;
     }
 

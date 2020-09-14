@@ -27,7 +27,9 @@ class CreateImage extends React.Component {
             open: false, 
             disk_format: "", 
             "X-Auth-Token": this.props.token, 
-            format_list: ['ami', 'ari', 'aki', 'vhd', 'vhdx', 'vmdk', 'raw', 'qcow2', 'vdi', 'ploop', 'iso']
+            format_list: ['ami', 'ari', 'aki', 'vhd', 'vhdx', 'vmdk', 'raw', 'qcow2', 'vdi', 'ploop', 'iso'], 
+            language_list: [ 'C/C++', 'Java' ], 
+            language: ""
         }
 
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
@@ -88,7 +90,8 @@ class CreateImage extends React.Component {
             min_disk: 0, 
             constraint_size: -1, 
             open: false, 
-            disk_format: ""
+            disk_format: "", 
+            language: ""
         });
     }
     
@@ -99,7 +102,8 @@ class CreateImage extends React.Component {
             min_disk: 0, 
             constraint_size: -1, 
             open: false, 
-            disk_format: ""
+            disk_format: "", 
+            language: ""
         });
     }
     
@@ -117,14 +121,25 @@ class CreateImage extends React.Component {
                         <TextField label="image_name" type="text" name="image_name" style={{width:240}} value={this.state.image_name} onChange={this.handleValueChange} margin="normal"/><br/>
                         <TextField label="min_ram (MB)" type="number" name="min_ram" style={{width:240}} value={this.state.min_ram} onChange={this.handleValueChange} margin="normal"/><br/>
                         <TextField label="min_disk (GB)" type="number" name="min_disk" style={{width:240}} value={this.state.min_disk} error={this.state.min_disk<=this.state.constraint_size} onChange={this.handleValueChange} margin="normal"/><br/>
+                        <TextField label="coding_language" type="text" select onChange={this.handleValueChange} style={{width:240}} required name="language" SelectProps={{
+                                MenuProps: {
+                                  className: classes.menu,
+                                }
+                            }} value={this.state.language} onChange={this.handleValueChange} margin="normal"> 
+                            {this.state.language_list.map((format) => (
+                                <MenuItem key={format} style={{width:240}} value={format}>
+                                {format}
+                                </MenuItem>
+                            ))}
+                        </TextField><br/>
                         <TextField label="disk_format" type="text" select onChange={this.handleValueChange} style={{width:240}} required name="disk_format" SelectProps={{
                                 MenuProps: {
                                   className: classes.menu,
                                 }
                             }} value={this.state.disk_format} onChange={this.handleValueChange} margin="normal"> 
-                            {this.state.format_list.map((format) => (
-                                <MenuItem key={format} style={{width:240}} value={format}>
-                                {format}
+                            {this.state.format_list.map((lang) => (
+                                <MenuItem key={lang} style={{width:240}} value={lang}>
+                                {lang}
                                 </MenuItem>
                             ))}
                         </TextField><br/><br/>
