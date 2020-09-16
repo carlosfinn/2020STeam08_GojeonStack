@@ -25,7 +25,7 @@ export default function Sidebar(props) {
   function activeRoute(routeName) {
     return window.location.href.indexOf(routeName) > -1 ? true : false;
   }
-  const { color, logo, image, logoText, routes, token, tenant_id, student_id, role } = props;
+  const { color, logo, image, logoText, routes, token, tenant_id, student_id, user_id, role } = props;
   var links = (
     <List className={classes.list}>
       {routes.map((prop, key) => {
@@ -52,6 +52,7 @@ export default function Sidebar(props) {
                 token: token,
                 tenant_id: tenant_id,
                 student_id: student_id,
+                user_id: user_id,
                 role: role
               }
 

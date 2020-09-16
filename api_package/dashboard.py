@@ -17,8 +17,10 @@ app.secret_key = b'x9@Q!2vC8o*'
 cors = CORS(
     app, resources={
         r"/*": {"origin": "*"},
-        r"/login/*": {"origin": "*"},
-        r"/register/*": {"origin": "*"},
+        r"/auth/*": {"origin": "*"},
+        r"/auth/login/*": {"origin": "*"},
+        r"/auth/register/*": {"origin": "*"},
+        r"/auth/password/*": {"origin": "*"},
         r"/api/*": {"origin": "*"},
         r"/api/vm/*": {"origin": "*"},
         r"/api/stack/*": {"origin": "*"},
@@ -27,16 +29,17 @@ cors = CORS(
     }
 )
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/auth/login', methods=['GET', 'POST'])
 def login():
-    data = request.get_json()
-    id = data['id']
-    pw = data['pw']
-    # id = 'student2'
-    # pw = 'test'
+    # data = request.get_json()
+    # id = data['id']
+    # pw = data['pw']
+    id = 'student1'
+    pw = 'test'
     #token,userId = auth.getToken(id,pw)
     scopedToken, userId = auth.getScopedToken(id, pw, 'admin')
-    projectId = '1ec98e5f0ec24969ab19e4e74c3b66ba'
+    #projectId = '1ec98e5f0ec24969ab19e4e74c3b66ba'
+    projectId = auth.getAdminProjectId(scopedToken)
     if id == 'admin':
         jsonResult = {
             'token': scopedToken,
@@ -53,6 +56,7 @@ def login():
             'role': role,
             'tenant_id': projectId,
             'student_id': id,
+            'user_id': userId,
             'loginResult': True            
         }
     
@@ -110,22 +114,24 @@ def login():
     return resJson
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/auth/register', methods=['GET', 'POST'])
 def register():
-    data = request.get_json()
-    role = data['role']
-    name = data['name']
-    pw = data['pw']
-    email = data['email']
-    # role = 'Student'
-    # name = 'student2'
-    # pw = 'test'
-    # email = 'abc@example.com'
+    # data = request.get_json()
+    # role = data['role']
+    # name = data['name']
+    # pw = data['pw']
+    # email = data['email']
+    role = 'Student'
+    name = 'student1'
+    pw = 'test'
+    email = 'abc@example.com'
 
     #token, userId = auth.getToken('admin', '8nkujc3rf')
     scopedToken, userId = auth.getScopedToken('admin', '8nkujc3rf', 'admin')
-    projectId = '1ec98e5f0ec24969ab19e4e74c3b66ba'  #admin project
-    role_id = 'e1cbeaa0ba144aa28dc7a47d0ee14a55'    #admin role
+    #projectId = '1ec98e5f0ec24969ab19e4e74c3b66ba'  #admin project
+    projectId = auth.getAdminProjectId(scopedToken)
+    #role_id = 'e1cbeaa0ba144aa28dc7a47d0ee14a55'    #admin role
+    role_id = auth.getUserRole(scopedToken, projectId, userId)
     
     user, character = auth.createUser(scopedToken, projectId, name, pw, email, role)
 
@@ -192,6 +198,31 @@ def register():
 
     resJson = json.dumps(jsonResult)
     return resJson
+
+@app.route('/auth/password', methods=['GET', 'POST'])
+def changePW():
+    requestHeader = request.headers
+    data = request.get_json()
+
+    token = requestHeader.get('X-Auth-Token', None)
+    pw = data['pw']
+    newPW = data['newPW']
+    user_id = data['user_id']
+
+    result = auth.changePassword(token, user_id, pw, newPW)
+    if result:
+        jsonResult = {
+            "passwordChanged": True,
+            "newPW": newPW
+        }
+    else:
+        jsonResult = {
+            "passwordChanged": False,
+        }
+    
+    resJson = json.dumps(jsonResult)
+    return resJson
+    
 
 @app.route('/api/flavors', methods=['GET'])
 def getFlavor():

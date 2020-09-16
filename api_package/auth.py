@@ -173,26 +173,51 @@ def getUserRole(token, project_id, user_id):
     roleList = resultJson['roles']
 
     for x in roleList:
-        role = x['name']
+        role = x['id']
         break
     return role
 
 
-def getProjectId(token):
+def getAdminProjectId(token):
     header = {
         'X-Auth-Token': token
     }
     result = requests.get(url_base + '/identity/v3/auth/projects', headers = header)
     
     resultJson = result.json()
-    project_name = ""
+    # project_name = ""
     project_id = ""
     projectList = resultJson['projects']
-    for x in projectList:
-        project_name = x['name']
-        project_id = x['id']
-        break        
+    projectInfo = next((item for item in projectList if item['name']=='admin'), None)
+    project_id = projectInfo['id']
 
-    return project_id, project_name
+    # for x in projectList:
+    #     project_name = x['name']
+    #     project_id = x['id']
+    #     break        
+
+    return project_id
+
+def changePassword(token, userId, pw, new_pw):
+    url = url_base + "/identity/v3/users/" + userId +  "/password"
+    body = \
+        {
+            "user": {
+                "password": new_pw,
+                "original_password": pw
+            }
+        }
+    
+    
+    header = {
+        'X-Auth-Token': token
+    }
+
+    result = requests.post(url, headers= header, data=json.dumps(body))
+    resultCode = result.status_code
+    if int(resultCode) == 204:
+        return True
+    else:
+        return False
 
 

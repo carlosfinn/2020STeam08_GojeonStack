@@ -34,6 +34,7 @@ class Dashboard extends React.Component {
     token: null,
     tenant_id: null,
     student_id: null,
+    user_id: null,
     role: null
   };
   mainPanel = React.createRef();
@@ -159,6 +160,7 @@ class Dashboard extends React.Component {
             token={this.props.location.state.token}
             tenant_id={this.props.location.state.tenant_id}
             student_id={this.props.location.state.student_id}
+            user_id={this.props.location.state.user_id}
             role={this.props.location.state.role}
             {...rest} />
           : null

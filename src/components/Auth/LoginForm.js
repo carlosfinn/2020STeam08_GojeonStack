@@ -60,6 +60,7 @@ class LoginForm extends Component {
             token: null,
             tenant_id: null,
             student_id: null,
+            user_id: null,
             role: null,
             loginresult: {}
         }
@@ -78,7 +79,7 @@ class LoginForm extends Component {
             id: this.state.id,
             pw: this.state.pw
         };
-        fetch("http://164.125.70.19:16384/login",{
+        fetch("http://164.125.70.19:16384/auth/login",{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -96,6 +97,7 @@ class LoginForm extends Component {
                     token: responseData.token,
                     tenant_id: responseData.tenant_id,
                     student_id: responseData.student_id,
+                    user_id: responseData.user_id,
                     role: responseData.role
                 });
                 console.log(this.state.token);
@@ -118,6 +120,7 @@ class LoginForm extends Component {
                             token: this.state.token,
                             tenant_id: this.state.tenant_id,
                             student_id: this.state.student_id,
+                            user_id: this.state.user_id,
                             role: this.state.role
 
                         }
