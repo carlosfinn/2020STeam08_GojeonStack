@@ -31,15 +31,13 @@ cors = CORS(
 
 @app.route('/auth/login', methods=['GET', 'POST'])
 def login():
-    # data = request.get_json()
-    # id = data['id']
-    # pw = data['pw']
-    id = 'student1'
-    pw = 'test'
-    #token,userId = auth.getToken(id,pw)
+    data = request.get_json()
+    id = data['id']
+    pw = data['pw']
+    
     scopedToken, userId = auth.getScopedToken(id, pw, 'admin')
-    #projectId = '1ec98e5f0ec24969ab19e4e74c3b66ba'
     projectId = auth.getAdminProjectId(scopedToken)
+
     if id == 'admin':
         jsonResult = {
             'token': scopedToken,
@@ -60,80 +58,32 @@ def login():
             'loginResult': True            
         }
     
-
-
-    # if id == 'admin':
-
-    #     AdminProjectId, AdminProjectName = auth.getProjectId(token)
-    #     scopedToken = auth.getScopedToken(id, pw, AdminProjectName)
-    #     if scopedToken is None:
-    #         jsonResult = {
-    #             'loginResult': False,
-                
-    #         }
-    #         resJson = json.dumps(jsonResult)
-    #         return resJson
-
-    #     jsonResult = {
-    #         'token': scopedToken,
-    #         'role': 'Teacher',
-    #         'tenant_id': AdminProjectId,
-    #         'student_id': id,
-    #         'loginResult': True            
-    #     }
-
-    # else:
-    #     if token is None:
-    #         jsonResult = {
-    #             'loginResult': False,
-                
-    #         }
-    #         resJson = json.dumps(jsonResult)
-    #         return resJson
-        
-    #     projectId, projectName = auth.getProjectId(token)
-    #     if projectName == 'studentproject':
-    #         jsonResult = {
-    #             'token': token,
-    #             'role': 'Student',
-    #             'tenant_id': projectId,
-    #             'student_id': id,
-    #             'loginResult': True
-            
-    #         }
-    #     if projectName == 'teacherproject':
-    #         jsonResult = {
-    #             'token': token,
-    #             'role': 'Teacher',
-    #             'tenant_id': projectId,
-    #             'student_id': id,
-    #             'loginResult': True
-    #         }
-    
     resJson = json.dumps(jsonResult)
     return resJson
 
 
 @app.route('/auth/register', methods=['GET', 'POST'])
 def register():
-    # data = request.get_json()
-    # role = data['role']
-    # name = data['name']
-    # pw = data['pw']
-    # email = data['email']
-    role = 'Student'
-    name = 'student1'
-    pw = 'test'
-    email = 'abc@example.com'
+    data = request.get_json()
+    role = data['role']
+    name = data['name']
+    pw = data['pw']
+    email = data['email']
+    
 
-    #token, userId = auth.getToken('admin', '8nkujc3rf')
     scopedToken, userId = auth.getScopedToken('admin', '8nkujc3rf', 'admin')
-    #projectId = '1ec98e5f0ec24969ab19e4e74c3b66ba'  #admin project
-    projectId = auth.getAdminProjectId(scopedToken)
-    #role_id = 'e1cbeaa0ba144aa28dc7a47d0ee14a55'    #admin role
-    role_id = auth.getUserRole(scopedToken, projectId, userId)
+    projectId = auth.getAdminProjectId(scopedToken)  #admin project
+    role_id = auth.getUserRole(scopedToken, projectId, userId)  #admin role
     
     user, character = auth.createUser(scopedToken, projectId, name, pw, email, role)
+
+    if user == 'Conflict':
+        jsonResult = {
+            'registerResult': False,
+            'userID': user
+        }
+        resJson = json.dumps(jsonResult)
+        return resJson
 
     auth.assignRoletoUser(scopedToken, projectId, user, role_id)
     jsonResult = {
@@ -143,58 +93,6 @@ def register():
         'userID': user,
         'character': character
     }
-
-    # if user == 'Conflict':
-    #     jsonResult = {
-    #         'registerResult': False,
-    #         'userID': user
-    #     }
-    #     resJson = json.dumps(jsonResult)
-    #     return resJson
-    
-
-
-    # if role == 'student':
-    #     projectId = 'a2bc01f0f9834ed9a30898c6560532cb'
-    #     user, des = auth.createUser(scopedToken, projectId, name, pw, email)
-    #     if user == 'Conflict':
-    #         jsonResult = {
-    #             'registerResult': False,
-    #             'userID': user
-    #         }
-    #         resJson = json.dumps(jsonResult)
-    #         return resJson
-
-    #     role_id = 'e1cbeaa0ba144aa28dc7a47d0ee14a55' #admin role
-    #     auth.assignRoletoUser(scopedToken, projectId, user, role_id)
-    #     jsonResult = {
-    #         'registerResult': True,
-    #         'name': name,
-    #         'password': pw,
-    #         'user': 'student',
-    #         'userID': user
-    #     }
-
-    # if role == 'teacher':
-    #     projectId = '40e39e2ea037494aa326c38b8e54b346'
-    #     user, des = auth.createUser(scopedToken, projectId, name, pw, email)
-    #     if user == 'Conflict':
-    #         jsonResult = {
-    #             'registerResult': False,
-    #             'userID': user
-    #         }
-    #         resJson = json.dumps(jsonResult)
-    #         return resJson
-        
-    #     role_id = 'e1cbeaa0ba144aa28dc7a47d0ee14a55' #admin role
-    #     auth.assignRoletoUser(scopedToken, projectId, user, role_id)
-    #     jsonResult = {
-    #         'registerResult': True,
-    #         'name': name,
-    #         'password': pw,
-    #         'user': 'teacher',
-    #         'userID': user
-    #     }
 
     resJson = json.dumps(jsonResult)
     return resJson
