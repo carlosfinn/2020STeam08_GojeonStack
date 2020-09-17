@@ -16,7 +16,13 @@ def getFlavors(X_AUTH_TOKEN: str):
 
     return rBody.get('flavors', None)
 
-def createInstance(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, image: str, vcpus: int, ram: int, disk: int, personeel: int):
+def accountSettingCMD(personeel: int) -> str:
+    result = ''
+    for x in range(personeel):
+        result += "  - useradd -m student%03d\n  - echo \"0000\\n0000\" | passwd student%03d\n  - echo \"0000\\n0000\"\n" % (x + 1, x + 1)
+    return result
+
+def createInstance(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, image: str, vcpus: int, ram: int, disk: int, personeel: int, language: str):
     url = localhost + "/heat-api/v1/" + tenant_id + "/stacks"
 
     rHeaders = {
@@ -25,6 +31,16 @@ def createInstance(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, image: st
     }
 
     flavor_name = stack_name + "_flavor"
+    volume_name = stack_name + "_volume"
+    instance_name = stack_name + "_server"
+
+    env_setting = ""
+    initial_command = "#cloud-config\nruncmd: \n  - apt-get update\n  - apt-get upgrade\n"
+
+    if language == "C/C++": env_setting = '''  - apt-get install gcc -y\n  - apt-get install g++ -y\n'''
+    elif language == "Java": env_setting = '''  - apt-get install openjdk-11-jre-headless -y\n'''
+
+    print(env_setting)
     rBody = {
         "stack_name": stack_name,
         "template": {
@@ -35,39 +51,54 @@ def createInstance(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, image: st
                     "properties": {
                         "ram": ram, "vcpus": vcpus, "disk": disk
                     }
+                }, 
+                (volume_name): {
+                    "type": "OS::Cinder::Volume",
+                    "properties": {
+                        "size": disk, "image": image, "volume_type": "lvmdriver-1"
+                    }
+                }, (instance_name): {
+                    "type": "OS::Nova::Server",
+                    "properties": {
+                        "flavor": { "get_resource": flavor_name },
+                        "networks": [{"network": "public"}], "block_device_mapping": [{
+                            "device_name": "vda",
+                            "volume_id": { "get_resource": volume_name },
+                            "delete_on_termination": False
+                        }], 
+                        "config_drive": True, "user_data_format": "RAW", 
+                        "user_data": initial_command + env_setting + accountSettingCMD(personeel)
+                    }
                 }
             }
         }
     }
+    print("cmdrum dump :", initial_command + env_setting + accountSettingCMD(personeel))
 
-    for x in range(personeel):
-        volume_name = stack_name + "_volume" + "_%2d" % (x)
-        instance_name = stack_name + "_server" + "_%2d" % (x)
-        
-        rBody["template"]["resources"].update({
-            (volume_name): {
-                "type": "OS::Cinder::Volume",
-                "properties": {
-                    "size": disk, "image": image, "volume_type": "lvmdriver-1"
-                }
-            }, (instance_name): {
-                "type": "OS::Nova::Server",
-                "properties": {
-                    "flavor": { "get_resource": flavor_name },
-                    "networks": [{"network": "public"}], "block_device_mapping": [{
-                        "device_name": "vda",
-                        "volume_id": { "get_resource": volume_name },
-                        "delete_on_termination": False
-                    }]
-                }
-            }
-        })
-
-    print(json.dumps(rBody))
     requestResult = requests.post(url, headers=rHeaders, data=json.dumps(rBody))
     requestResult.raise_for_status()
+    stack_info = requestResult.json()
+    stack = stack_info.get("stack", {})
+    lecture_id = stack.get("id", "")
+
+    lecture_sign_up_list = pymysql.connect(
+        user='root',
+        passwd='8nkujc3rf',
+        host='localhost',
+        db='lecture_sign_up_list',
+        charset='utf8'
+    )
+    
+    cursor = lecture_sign_up_list.cursor(pymysql.cursors.DictCursor)
+    query = '''insert into lectures(lecture_id, personeel) values('%s', '%d')''' % (lecture_id, personeel)
+    cursor.execute(query)
+    
+    lecture_sign_up_list.commit()
+    lecture_sign_up_list.close()
 
     return requestResult.json()
+
+
 
 def getStackList(X_AUTH_TOKEN: str, tenant_id: str):
     rHeaders = {
@@ -128,6 +159,8 @@ def deleteStack(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_id: st
     cursor = lecture_sign_up_list.cursor(pymysql.cursors.DictCursor)
     sql_query = '''delete from sign_up_list where lecture_id = '%s';''' % (stack_id)
     cursor.execute(sql_query)
+    sql_query_02 = '''delete from lectures where lecture_id = '%s';''' % (stack_id)
+    cursor.execute(sql_query_02)
 
     lecture_sign_up_list.commit()
     lecture_sign_up_list.close()
@@ -246,6 +279,25 @@ def getCurrentStudent(stack_id: str) -> dict:
     lecture_sign_up_list.close()
     return result[0]
 
+def getLecturePersoneel(lecture_id: str) -> int:
+    lecture_sign_up_list = pymysql.connect(
+        user='root',
+        passwd='8nkujc3rf',
+        host='localhost',
+        db='lecture_sign_up_list',
+        charset='utf8'
+    )
+    
+    cursor = lecture_sign_up_list.cursor(pymysql.cursors.DictCursor)
+    query = '''SELECT personeel FROM lecture where lecture_id = '%s';''' % (lecture_id)
+    cursor.execute(query)
+
+    result = cursor.fetchall()
+    print(result)
+    lecture_sign_up_list.close()
+
+    return result[0].get("personeel", 0)
+
 def getInstanceConsole(X_AUTH_TOKEN: str, instance_id: str):
     rHeaders = {
         'Content-Type': 'application/json',
@@ -341,8 +393,8 @@ def enrollStudent(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_id: 
             instance_id = getEnrolledInfo(student_id, stack_id).get("vm_id", None)
             print(instance_id)
         else:
-            next_instance = lecture_resources[current_count]
-            if current_count >= len(lecture_resources): return ''
+            next_instance = lecture_resources[0]
+            if current_count >= getLecturePersoneel(stack_id): return ''
             instance_id = next_instance.get("physical_resource_id", None)
             query = '''insert into sign_up_list(lecture_id, student_id, lecture_order, vm_id) values('%s', '%s', %d, '%s')''' % (stack_id, student_id, current_count, instance_id)
             cursor.execute(query)

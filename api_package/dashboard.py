@@ -147,8 +147,9 @@ def createStack():
     disk = requestBody.get("disk", 24)
     stack_name = requestBody.get("stack_name", get_random_string(16))
     personeel = requestBody.get("personeel", 0)
+    language = requestBody.get("language", '')
 
-    result = api.createInstance(X_AUTH_TOKEN, tenant_id, stack_name, image, vcpus, ram, disk, int(personeel))
+    result = api.createInstance(X_AUTH_TOKEN, tenant_id, stack_name, image, vcpus, ram, disk, int(personeel), language)
     print(X_AUTH_TOKEN, tenant_id, stack_name, image, vcpus, ram, disk)
     return json.dumps(result)
 

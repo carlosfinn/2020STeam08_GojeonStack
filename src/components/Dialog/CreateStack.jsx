@@ -33,7 +33,9 @@ class CreateStack extends React.Component {
             image_constraints: {}, 
             open: false, 
             "X-Auth-Token": this.props.token, 
-            tenant_id: this.props.tenant_id
+            tenant_id: this.props.tenant_id, 
+            language: '', 
+            language_list: ["C/C++", "Java"]
         }
 
         console.log(this.state);
@@ -113,7 +115,8 @@ class CreateStack extends React.Component {
             ram: this.state.ram, 
             disk: this.state.disk, 
             image: this.state.image, 
-            personeel: this.state.personeel
+            personeel: this.state.personeel, 
+            language: this.state.language
         }
         const request = {
             method: 'POST', 
@@ -145,7 +148,8 @@ class CreateStack extends React.Component {
                     image: '', 
                     image_list: [],
                     image_constraints: {}, 
-                    open: false
+                    open: false, 
+                    language: ''
                 });
             } else alert("수강자의 수는 반드시 한 명 이상으로 설정하십시오.");
         } else alert("이미지에서 요구하는 디스크 혹은 RAM의 용량을 충족하지 않습니다.");
@@ -164,7 +168,8 @@ class CreateStack extends React.Component {
             image: '', 
             image_list: [],
             image_constraints: {}, 
-            open: false
+            open: false, 
+            language: ''
         });
     }
 
@@ -183,6 +188,17 @@ class CreateStack extends React.Component {
                         <TextField label="ram (MB)" type="number" name="ram" value={this.state.ram} style={{width:240}} required error={this.state.ram_error} onChange={this.handleValueChange} margin="normal"/><br/>
                         <TextField label="disk (GB)" type="number" name="disk" value={this.state.disk} style={{width:240}} required error={this.state.disk_error} onChange={this.handleValueChange} margin="normal"/><br/>
                         <TextField label="personeel" type="number" name="personeel" value={this.state.personeel} style={{width:240}} required error={this.state.personeel<=0} onChange={this.handleValueChange} margin="normal"/><br/>
+                        <TextField label="language" type="text" select onChange={this.handleValueChange} style={{width:240}} required name="language" SelectProps={{
+                                MenuProps: {
+                                  className: classes.menu,
+                                }
+                            }} value={this.state.language} onChange={this.handleValueChange} margin="normal"> 
+                            {this.state.language_list.map((language) => (
+                                <MenuItem key={language} style={{width:240}} value={language}>
+                                {language}
+                                </MenuItem>
+                            ))}
+                        </TextField><br/>
                         <TextField label="image" type="text" select onChange={this.handleValueChange} style={{width:240}} required name="image" SelectProps={{
                                 MenuProps: {
                                   className: classes.menu,
