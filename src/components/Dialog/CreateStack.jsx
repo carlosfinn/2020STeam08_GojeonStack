@@ -124,7 +124,7 @@ class CreateStack extends React.Component {
             method: 'POST', 
             headers: {
                 "X-Auth-Token": this.state["X-Auth-Token"], 
-                "tenant_id": "ac09f439d0d941c39060b52864146c62"
+                "tenant_id": this.state.tenant_id
             }, 
             body: JSON.stringify(requestBody)
         };

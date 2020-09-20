@@ -252,9 +252,8 @@ def createImage():
     filedir = UPLOAD_FOLDER + '/' + filename
     upload_command = '''curl -i -X PUT -H "X-Auth-Token: %s" -H "Content-Type: application/octet-stream" -d @%s %s''' \
         % (X_AUTH_TOKEN, filedir, uploadurl)
-    print(upload_command)
     os.system(upload_command)
-    ##os.system('rm '+filedir)
+    os.system('rm '+filedir)
     
     return {}
 
