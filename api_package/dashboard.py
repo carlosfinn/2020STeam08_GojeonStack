@@ -121,17 +121,6 @@ def changePW():
     resJson = json.dumps(jsonResult)
     return resJson
     
-
-@app.route('/api/flavors', methods=['GET'])
-def getFlavor():
-    requestHeader = request.headers
-    X_AUTH_TOKEN = requestHeader.get('X-Auth-Token', None)
-
-    result = api.getFlavors(X_AUTH_TOKEN)
-    print(json.dumps(result))
-
-    return json.dumps(result)
-
 @app.route('/api/stack/create', methods=['POST'])
 def createStack():
     requestHeader = request.headers
@@ -148,8 +137,9 @@ def createStack():
     stack_name = requestBody.get("stack_name", get_random_string(16))
     personeel = requestBody.get("personeel", 0)
     language = requestBody.get("language", '')
+    creator_id = requestBody.get("creator_id", '')
 
-    result = api.createInstance(X_AUTH_TOKEN, tenant_id, stack_name, image, vcpus, ram, disk, int(personeel), language)
+    result = api.createInstance(X_AUTH_TOKEN, tenant_id, stack_name, image, vcpus, ram, disk, int(personeel), language, creator_id)
     print(X_AUTH_TOKEN, tenant_id, stack_name, image, vcpus, ram, disk)
     return json.dumps(result)
 
@@ -237,7 +227,7 @@ def createImage():
     requestHeader = request.headers
 
     X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
-    disk_format = requestHeader.get("disk_format", "qcow2")
+    disk_format = requestHeader.get("disk_format", "raw")
     min_disk = requestHeader.get("min_disk", 0)
     min_ram = requestHeader.get("min_ram", 0)
     name = requestHeader.get("name", get_random_string(16))

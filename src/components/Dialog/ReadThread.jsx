@@ -178,7 +178,7 @@ class ReadThread extends React.Component {
                 <TableCell className={classes.tableCell}>
                     <a onClick={this.handleClickOpen}>{this.state.title}</a>
                     <Dialog open={this.state.open} onClose={this.handleClose}>
-                        <DialogTitle>Create Image</DialogTitle>
+                        <DialogTitle>Read posts</DialogTitle>
                             <DialogContent>
                                 <TextField label="title" type="text" name="title" style={{width:500}} InputProps={{readOnly: true}} value={this.state.title} error={!this.state.title} onChange={this.handleValueChange} margin="normal"/><br/>
                                 <TextField label="content" type="number" name="content" style={{width:500}} InputProps={{readOnly: true}} rows={10} multiline value={this.state.content} error={!this.state.title} onChange={this.handleValueChange} margin="normal"/><br/>

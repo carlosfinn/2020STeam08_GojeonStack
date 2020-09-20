@@ -2,19 +2,6 @@ import requests, json, pymysql
 
 localhost = "http://164.125.70.19"
 
-def getFlavors(X_AUTH_TOKEN: str):
-    url = localhost + "/compute/v2.1/flavors/detail"
-    rHeaders = {
-        'Content-Type': 'application/json',
-        "X-Auth-Token": X_AUTH_TOKEN
-    }
-
-    RAW = requests.get(url, headers=rHeaders)
-    RAW.raise_for_status()
-
-    rBody = RAW.json()
-
-    return rBody.get('flavors', None)
 
 def accountSettingCMD(personeel: int) -> str:
     result = ''
@@ -22,7 +9,7 @@ def accountSettingCMD(personeel: int) -> str:
         result += "  - useradd -m student%03d\n  - echo \"0000\\n0000\" | passwd student%03d\n  - echo \"0000\\n0000\"\n" % (x + 1, x + 1)
     return result
 
-def createInstance(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, image: str, vcpus: int, ram: int, disk: int, personeel: int, language: str):
+def createInstance(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, image: str, vcpus: int, ram: int, disk: int, personeel: int, language: str, creator_id: str):
     url = localhost + "/heat-api/v1/" + tenant_id + "/stacks"
 
     rHeaders = {
@@ -90,7 +77,7 @@ def createInstance(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, image: st
     )
     
     cursor = lecture_sign_up_list.cursor(pymysql.cursors.DictCursor)
-    query = '''insert into lectures(lecture_id, personeel) values('%s', '%d')''' % (lecture_id, personeel)
+    query = '''insert into lectures(lecture_id, personeel, creator_id) values('%s', '%d', '%s')''' % (lecture_id, personeel, creator_id)
     cursor.execute(query)
     
     lecture_sign_up_list.commit()
@@ -289,12 +276,13 @@ def getLecturePersoneel(lecture_id: str) -> int:
     )
     
     cursor = lecture_sign_up_list.cursor(pymysql.cursors.DictCursor)
-    query = '''SELECT personeel FROM lecture where lecture_id = '%s';''' % (lecture_id)
+    query = '''SELECT personeel FROM lectures where lecture_id = '%s';''' % (lecture_id)
     cursor.execute(query)
 
     result = cursor.fetchall()
     print(result)
     lecture_sign_up_list.close()
+    print(result)
 
     return result[0].get("personeel", 0)
 

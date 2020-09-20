@@ -64,7 +64,7 @@ class Dashboard extends React.Component {
   render() {
     let teacherCreateMenu;
     if (this.state.role != "Student") {
-      teacherCreateMenu = <CreateStack token={this.state["X-Auth-Token"]} tenant_id={this.state.tenant_id}/>;
+      teacherCreateMenu = <CreateStack token={this.state["X-Auth-Token"]} tenant_id={this.state.tenant_id} creator_id={this.state.student_id}/>;
     } else {
       teacherCreateMenu = null;
     }
@@ -78,50 +78,9 @@ class Dashboard extends React.Component {
         cardTitle={this.props.classes.cardTitle} role={this.state.role}
         stats={this.props.classes.stats} student_id={this.state.student_id}/>
         <GridContainer>
-          <GridItem xs={12} sm={12} md={6}>
-            <CustomTabs
-              title="Assignments:"
-              headerColor="primary"
-              tabs={[
-                {
-                  tabName: "Bugs",
-                  tabIcon: BugReport,
-                  tabContent: (
-                    <Tasks
-                      checkedIndexes={[0, 3]}
-                      tasksIndexes={[0, 1, 2, 3]}
-                      tasks={bugs}
-                    />
-                  )
-                },
-                {
-                  tabName: "Website",
-                  tabIcon: Code,
-                  tabContent: (
-                    <Tasks
-                      checkedIndexes={[0]}
-                      tasksIndexes={[0, 1]}
-                      tasks={website}
-                    />
-                  )
-                },
-                {
-                  tabName: "Server",
-                  tabIcon: Cloud,
-                  tabContent: (
-                    <Tasks
-                      checkedIndexes={[1]}
-                      tasksIndexes={[0, 1, 2]}
-                      tasks={server}
-                    />
-                  )
-                }
-              ]}
-            />
-          </GridItem>
-          <GridItem xs={12} sm={12} md={6}>
+          <GridItem xs={12} sm={12} md={12}>
             <Card>
-              <CardHeader color="warning">
+              <CardHeader color="primary">
                 <h4 className={this.props.classes.cardTitleWhite}>과목 공지사항</h4>
                 <p className={this.props.classes.cardCategoryWhite}>
                   과목 공지사항을 여기에다 올립니다. 

@@ -35,7 +35,8 @@ class CreateStack extends React.Component {
             "X-Auth-Token": this.props.token, 
             tenant_id: this.props.tenant_id, 
             language: '', 
-            language_list: ["C/C++", "Java"]
+            language_list: ["C/C++", "Java"], 
+            creator_id: this.props.creator_id
         }
 
         console.log(this.state);
@@ -116,7 +117,8 @@ class CreateStack extends React.Component {
             disk: this.state.disk, 
             image: this.state.image, 
             personeel: this.state.personeel, 
-            language: this.state.language
+            language: this.state.language, 
+            creator_id: this.state.creator_id
         }
         const request = {
             method: 'POST', 
