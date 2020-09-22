@@ -106,17 +106,26 @@ def changePW():
     pw = data['pw']
     newPW = data['newPW']
     user_id = data['user_id']
+    # token = 'gAAAAABfaikq4qrtcE8hYQRev_MVXz5_6UicTX3XtAVtwRq2IUGwsRtP3FIU8UNHLNMpKVlp7-ILyR24AGeI1teJlarsJqamy4r9KK1Cjs4arQP4YpDDX0dDEzch1l-3e4kBkMvr66W_d-BrNkP6UsWpkr-a_-NlWVub-M-vnu7lnJosd0zl49g'
+    # pw = 'newtest5'
+    # newPW = 'newtest6'
+    # user_id = 'f2d68408d18942f2847c1d074a09dedb'
 
     result = auth.changePassword(token, user_id, pw, newPW)
-    if result:
+    print(result)
+    if result == 'Complete':
         jsonResult = {
-            "passwordChanged": True,
-            "newPW": newPW
+            'passwordChanged': True,
+            'newPW': newPW
         }
-    else:
+
+    if result == 'Conflict':
         jsonResult = {
-            "passwordChanged": False,
+            'passwordChanged': False,
+            'message': 'conflict'
         }
+
+    
     
     resJson = json.dumps(jsonResult)
     return resJson

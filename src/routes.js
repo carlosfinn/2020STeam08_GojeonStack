@@ -58,13 +58,7 @@ const dashboardRoutes = [
     component: TableList,
     layout: "/admin"
   },
-  {
-    path: "/typography",
-    name: "Typography",
-    icon: LibraryBooks,
-    component: Typography,
-    layout: "/admin"
-  }
+  
 ];
 
 export default dashboardRoutes;

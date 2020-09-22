@@ -210,14 +210,20 @@ def changePassword(token, userId, pw, new_pw):
     
     
     header = {
+        'Content-Type': 'application/json',
         'X-Auth-Token': token
     }
 
-    result = requests.post(url, headers= header, data=json.dumps(body))
+    result = requests.post(url, headers= header, data=json.dumps(body), verify=True)
     resultCode = result.status_code
+    message = ""
+    print(resultCode)
     if int(resultCode) == 204:
-        return True
-    else:
-        return False
+        message = "Complete"
+        return message
+
+    if int(resultCode) == 400:
+        message = "Conflict"
+        return message
 
 
