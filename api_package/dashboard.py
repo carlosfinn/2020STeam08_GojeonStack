@@ -1,7 +1,7 @@
 from flask import Flask, request, make_response, flash, redirect, Response
 from flask_cors import CORS
 import requests, json, os, api,auth
-import random, string, time, uuid
+import random, string, time, uuid, subprocess
 
 def get_random_string(length):
     letters = string.ascii_lowercase
@@ -236,12 +236,12 @@ def createImage():
     requestHeader = request.headers
 
     X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
-    disk_format = requestHeader.get("disk_format", "raw")
+    disk_format = requestHeader.get("disk_format", "RAW")
     min_disk = requestHeader.get("min_disk", 0)
     min_ram = requestHeader.get("min_ram", 0)
     name = requestHeader.get("name", get_random_string(16))
 
-    uploadurl = api.createImageInfo(X_AUTH_TOKEN, disk_format, int(min_disk), int(min_ram), name)
+    ##uploadurl = api.createImageInfo(X_AUTH_TOKEN, disk_format, int(min_disk), int(min_ram), name)
 
     filename = ''
     if request.method == 'POST':
@@ -259,10 +259,13 @@ def createImage():
             uploadfile.save(os.path.join(app.config['UPLOAD_FOLDER'], uploadfile.filename))
 
     filedir = UPLOAD_FOLDER + '/' + filename
-    upload_command = '''curl -i -X PUT -H "X-Auth-Token: %s" -H "Content-Type: application/octet-stream" -d @%s %s''' \
-        % (X_AUTH_TOKEN, filedir, uploadurl)
-    os.system(upload_command)
-    os.system('rm '+filedir)
+    command = "openstack image create --disk-format %s --min-disk %d --min-ram %d --file %s --public %s" % (disk_format, int(min_disk), int(min_ram), filedir, name)
+    os.system(command)
+    print(command)
+    ##upload_command = '''curl -i -X PUT -H "X-Auth-Token: %s" -H "Content-Type: application/octet-stream" -d @%s %s''' \
+    ##    % (X_AUTH_TOKEN, filedir, uploadurl)
+    ##os.system(upload_command)
+    ##os.system('rm '+filedir)
     
     return {}
 

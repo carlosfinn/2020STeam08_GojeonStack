@@ -236,9 +236,9 @@ export default class HeatApi extends React.Component {
       student_id: this.props.student_id
     }
     this.updateInfo();
-    if (this.state.role == "Student") this.interval = setInterval(() => {
+    this.interval = setInterval(() => {
       this.updateInfo();
-    },5000);
+    },1000);
   }
 
   getStackInfo = async() => {
