@@ -54,7 +54,8 @@ def createInstance(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, image: st
                             "delete_on_termination": False
                         }], 
                         "config_drive": True, "user_data_format": "RAW", 
-                        "user_data": initial_command + env_setting + accountSettingCMD(personeel)
+                        "user_data": initial_command + env_setting + accountSettingCMD(personeel), 
+                        "key_name": "babo"
                     }
                 }
             }

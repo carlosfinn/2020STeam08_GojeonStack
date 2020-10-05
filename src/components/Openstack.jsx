@@ -50,8 +50,8 @@ class StackInfo extends React.Component {
       this.interval = setInterval(() => {
         this.checkEnrolled();
         if (this.state.enrolleddata.enrolled) this.enrollStudent();
-      },1000);
-    }
+      },10000);
+    } else this.getConsoleLink();
   }
 
   getConsoleLink() {
@@ -140,14 +140,11 @@ class StackInfo extends React.Component {
 
     if (isStudent) {
       DeleteButton = <br/>;
-      //this.checkEnrolled();
       if (!this.state.enrolleddata.enrolled) LectureConsole = <Button variant="contained" color="primary" onClick={this.enrollStudent}>Take Lecture</Button>;
       else {
-        //this.enrollStudent();
         LectureConsole = <a href={this.state.studentconsole.url}>Go to console</a>;
       }
     } else {
-      this.getConsoleLink();
       DeleteButton = <Button variant="contained" color="primary" onClick={this.DeleteStack.bind(this)}>DELETE</Button>;
       LectureConsole = <a href={this.state.consoleData.url}>Go to console</a>;
     }
@@ -238,7 +235,7 @@ export default class HeatApi extends React.Component {
     this.updateInfo();
     this.interval = setInterval(() => {
       this.updateInfo();
-    },1000);
+    },20000);
   }
 
   getStackInfo = async() => {
