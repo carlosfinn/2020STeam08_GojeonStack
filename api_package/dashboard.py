@@ -1,7 +1,9 @@
+
 from flask import Flask, request, make_response, flash, redirect, Response
 from flask_cors import CORS
-import requests, json, os, api,auth
+import requests, json, os
 import random, string, time, uuid, subprocess
+import api, auth, heat, glance
 
 def get_random_string(length):
     letters = string.ascii_lowercase
@@ -148,7 +150,7 @@ def createStack():
     language = requestBody.get("language", '')
     creator_id = requestBody.get("creator_id", '')
 
-    result = api.createInstance(X_AUTH_TOKEN, tenant_id, stack_name, image, vcpus, ram, disk, int(personeel), language, creator_id)
+    result = heat.createInstance(X_AUTH_TOKEN, tenant_id, stack_name, image, vcpus, ram, disk, int(personeel), language, creator_id)
     print(X_AUTH_TOKEN, tenant_id, stack_name, image, vcpus, ram, disk)
     return json.dumps(result)
 
@@ -161,7 +163,7 @@ def getStackDetails():
     stack_name = requestHeader.get("stack_name", None)
     stack_id = requestHeader.get("stack_id", None)
 
-    result = api.getStackStatus(X_AUTH_TOKEN, tenant_id, stack_name, stack_id)
+    result = heat.getStackStatus(X_AUTH_TOKEN, tenant_id, stack_name, stack_id)
     print(result)
 
     return json.dumps(result)
@@ -173,7 +175,7 @@ def listStack():
     X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
     tenant_id = requestHeader.get("tenant_id", None)
 
-    result = api.getStackList(X_AUTH_TOKEN, tenant_id)
+    result = heat.getStackList(X_AUTH_TOKEN, tenant_id)
 
     return json.dumps(result)
 
@@ -189,7 +191,7 @@ def deleteStack():
     stack_name = requestBody.get("stack_name", None)
     stack_id = requestBody.get("stack_id", None)
 
-    result = api.deleteStack(X_AUTH_TOKEN, tenant_id, stack_name, stack_id)
+    result = heat.deleteStack(X_AUTH_TOKEN, tenant_id, stack_name, stack_id)
 
     return json.dumps(result)
 
@@ -201,7 +203,7 @@ def deleteImage():
     X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
     image_id = requestHeader.get("image_id", None)
 
-    result = api.deleteImage(X_AUTH_TOKEN, image_id)
+    result = glance.deleteImage(X_AUTH_TOKEN, image_id)
 
     return json.dumps(result)
 
@@ -210,7 +212,7 @@ def listImage():
     requestHeader = request.headers
     X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
 
-    result = api.getImageList(X_AUTH_TOKEN)
+    result =glance.getImageList(X_AUTH_TOKEN)
 
     return json.dumps(result)
 
@@ -221,8 +223,6 @@ def tableImage():
 
     result = api.getImageList(X_AUTH_TOKEN)
     image_table = list()
-    ##print(result)
-
     for image in result: 
         img_size = image.get("size", 0)
         if not img_size: img_size = 0
@@ -278,7 +278,7 @@ def getInstanceConsole():
     stack_id = requestHeader.get("stack_id", None)
     tenant_id = requestHeader.get("tenant_id", None)
 
-    instance_list = api.getInstanceInfo(X_AUTH_TOKEN, tenant_id, stack_name, stack_id)
+    instance_list = heat.getInstanceInfo(X_AUTH_TOKEN, tenant_id, stack_name, stack_id)
     instance = instance_list[0]
     console_info = api.getInstanceConsole(X_AUTH_TOKEN, instance.get("physical_resource_id", None))
 
