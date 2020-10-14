@@ -128,7 +128,6 @@ def changePW():
         }
 
     
-    
     resJson = json.dumps(jsonResult)
     return resJson
     
@@ -221,7 +220,7 @@ def tableImage():
     requestHeader = request.headers
     X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
 
-    result = api.getImageList(X_AUTH_TOKEN)
+    result = glance.getImageList(X_AUTH_TOKEN)
     image_table = list()
     for image in result: 
         img_size = image.get("size", 0)
@@ -368,7 +367,7 @@ def fetchPost():
     filename = requestHeader.get("filename", None)
     foldername = requestHeader.get("foldername", None)
     
-    result = api.fetchFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, filename)
+    result = swift.fetchFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, filename)
     print(result.text)
 
     return result.text
