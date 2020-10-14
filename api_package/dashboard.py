@@ -3,7 +3,7 @@ from flask import Flask, request, make_response, flash, redirect, Response
 from flask_cors import CORS
 import requests, json, os
 import random, string, time, uuid, subprocess
-import api, auth, heat, glance
+import api, auth, heat, glance, lecture, swift
 
 def get_random_string(length):
     letters = string.ascii_lowercase
@@ -280,7 +280,7 @@ def getInstanceConsole():
 
     instance_list = heat.getInstanceInfo(X_AUTH_TOKEN, tenant_id, stack_name, stack_id)
     instance = instance_list[0]
-    console_info = api.getInstanceConsole(X_AUTH_TOKEN, instance.get("physical_resource_id", None))
+    console_info = enroll.getInstanceConsole(X_AUTH_TOKEN, instance.get("physical_resource_id", None))
 
     return json.dumps(console_info)
 
@@ -290,7 +290,7 @@ def getEnrolledInformation():
 
     stack_id = requestHeader.get("stack_id", None)
     student_id = requestHeader.get("student_id", None)
-    info = api.getEnrolledInfo(student_id, stack_id)
+    info = lecture.getEnrolledInfo(student_id, stack_id)
 
     return json.dumps({"enrolled": info != None})
 
@@ -304,7 +304,7 @@ def enroll():
     tenant_id = requestHeader.get("tenant_id", None)
     student_id = requestHeader.get("student_id", None)
 
-    return json.dumps(api.enrollStudent(X_AUTH_TOKEN, tenant_id, stack_name, stack_id, student_id))
+    return json.dumps(lecture.enrollStudent(X_AUTH_TOKEN, tenant_id, stack_name, stack_id, student_id))
 
 @app.route('/api/board/thread', methods=['POST'])
 def boardWrite():
@@ -319,7 +319,7 @@ def boardWrite():
 
     title = requestBody.get("title", None)
     content = requestBody.get("content", None)
-    result = api.uploadPost(X_AUTH_TOKEN, student_id, tenant_id, str(uuid.uuid4()), str(uuid.uuid4()), title, content, filename)
+    result = swift.uploadPost(X_AUTH_TOKEN, student_id, tenant_id, str(uuid.uuid4()), str(uuid.uuid4()), title, content, filename)
     print(result)
     return json.dumps(result)
 
@@ -349,13 +349,13 @@ def uploadFile():
 
         filedir = UPLOAD_FOLDER + '/' + filename
         fbuffer = open(filedir, 'rb')
-        api.uploadFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, filename, fbuffer.read())
+        swift.uploadFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, filename, fbuffer.read())
         fbuffer.close()
         os.system('rm '+filedir)
         return {}
     else: 
         print(filename)
-        result = api.fetchFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, filename)
+        result = swift.fetchFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, filename)
         return Response(result, content_type="application/octet-stream")
 
 @app.route('/api/board/fetchpost', methods=['GET'])
@@ -375,7 +375,7 @@ def fetchPost():
 
 @app.route('/api/board/fetchall', methods=['GET'])
 def fetchAll():
-    results = api.fetchPost()
+    results = swift.fetchPost()
     for result in results:
         result['written'] = result['written'].strftime("%Y-%m-%d %H:%M")
     return json.dumps(results)
@@ -390,7 +390,7 @@ def deletePost():
     foldername = requestHeader.get("foldername", None)
     post_id = requestHeader.get("post_id", None)
 
-    api.deletePost(X_AUTH_TOKEN, student_id, tenant_id, foldername, int(post_id))
+    swift.deletePost(X_AUTH_TOKEN, student_id, tenant_id, foldername, int(post_id))
 
     return ''
 
