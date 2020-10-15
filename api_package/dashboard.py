@@ -234,7 +234,7 @@ def tableImage():
 def createImage():
     requestHeader = request.headers
 
-    X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
+    ## X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
     disk_format = requestHeader.get("disk_format", "RAW")
     min_disk = requestHeader.get("min_disk", 0)
     min_ram = requestHeader.get("min_ram", 0)
