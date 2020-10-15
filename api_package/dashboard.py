@@ -1,21 +1,28 @@
-
+## 필요한 패키지를 import합니다. 가급적 건드리지 마시기 바랍니다. 
 from flask import Flask, request, make_response, flash, redirect, Response
 from flask_cors import CORS
 import requests, json, os
 import random, string, time, uuid, subprocess
 import api, auth, heat, glance, lecture, swift
 
+
+## random_string을 생성합니다. 
 def get_random_string(length):
     letters = string.ascii_lowercase
     result_str = ''.join(random.choice(letters) for i in range(length))
     print("Random string of length", length, "is:", result_str)
     return result_str
 
+
+## api서버를 구동하기 위한 기본설정을 수행합니다. 
 app = Flask(__name__)
 UPLOAD_FOLDER = '../imageBuffer'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = b'x9@Q!2vC8o*'
 
+
+## chrome 등등의 대다수의 브라우저들은 CORS라는 출처동일의 원칙을 적용하므로 이에 대한 사전설정을 수행해야합니다. 
+## 각 api의 url별로 CORS를 설정하는 것입니다. 
 cors = CORS(
     app, resources={
         r"/*": {"origin": "*"},
@@ -31,6 +38,7 @@ cors = CORS(
     }
 )
 
+## 로그인을 수행하고 dashboard (web)에서 그 결과를 통해 다음 화면으로 넘겨줄 수 있도록 한다. 
 @app.route('/auth/login', methods=['GET', 'POST'])
 def login():
     data = request.get_json()
@@ -63,7 +71,7 @@ def login():
     resJson = json.dumps(jsonResult)
     return resJson
 
-
+## 학생, 선생님의 유형에 맞게 회원가입을 할 수 있습니다. 
 @app.route('/auth/register', methods=['GET', 'POST'])
 def register():
     data = request.get_json()
@@ -99,6 +107,7 @@ def register():
     resJson = json.dumps(jsonResult)
     return resJson
 
+## 사용자는 원할경우 언제나 패스워드를 변경할 수 있습니다. 
 @app.route('/auth/password', methods=['GET', 'POST'])
 def changePW():
     requestHeader = request.headers
@@ -131,6 +140,8 @@ def changePW():
     resJson = json.dumps(jsonResult)
     return resJson
     
+## 강의를 생성합니다. 
+## 입력받는 내용 : 가상머신에 사용하는 이미지, vcpu의 수, ram 용량, disk의 용량, 강의 이름, 접속하는 학생들의 수, 코딩에 사용하는 언어, 강의를 생성하는 강사의 id
 @app.route('/api/stack/create', methods=['POST'])
 def createStack():
     requestHeader = request.headers
