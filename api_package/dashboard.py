@@ -164,6 +164,7 @@ def createStack():
     print(X_AUTH_TOKEN, tenant_id, stack_name, image, vcpus, ram, disk)
     return json.dumps(result)
 
+## 강의(stack)에 대한 정보를 추출합니다. 이 때 정보란 강의에 대한 데이터베이스 정보가 아니라, Openstack 내에서의 자원의 단위인 stack으로써의 강의를 말합니다. 
 @app.route('/api/stack/details', methods=['GET'])
 def getStackDetails():
     requestHeader = request.headers
@@ -178,6 +179,7 @@ def getStackDetails():
 
     return json.dumps(result)
 
+## 강의(stack)의 목록을 부릅니다. 
 @app.route('/api/stack/list', methods=['GET'])
 def listStack():
     requestHeader = request.headers
@@ -189,6 +191,7 @@ def listStack():
 
     return json.dumps(result)
 
+## 특정 강의를 삭제합니다. 
 @app.route('/api/stack/delete', methods=['DELETE'])
 def deleteStack():
     requestHeader = request.headers
@@ -205,8 +208,8 @@ def deleteStack():
 
     return json.dumps(result)
 
-### image api start
-
+### 여기는 이미지와 관련된 웹 api 부분입니다. 
+## 선택한 이미지를 삭제합니다. 
 @app.route('/api/image/delete', methods=['DELETE'])
 def deleteImage():
     requestHeader = request.headers
@@ -217,6 +220,8 @@ def deleteImage():
 
     return json.dumps(result)
 
+
+## 이미지의 목록을 확인합니다. 
 @app.route('/api/image/list', methods=['GET'])
 def listImage():
     requestHeader = request.headers
@@ -226,6 +231,7 @@ def listImage():
 
     return json.dumps(result)
 
+## 이미지의 목록을 dashboard(웹 인터페이스)의 템플릿에서 사용할 수 있는 형태로 변환하여 돌려줍니다. 
 @app.route('/api/image/table', methods=['GET'])
 def tableImage():
     requestHeader = request.headers
@@ -241,17 +247,18 @@ def tableImage():
 
     return json.dumps(image_table)
 
+## 이미지를 생성합니다. 기본 구조는 이미지를 첨부해서 올리면 서버로 해당 파일을 불러와 저장하는 것입니다. 
 @app.route('/api/image/create', methods=['POST'])
 def createImage():
     requestHeader = request.headers
 
-    ## X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
+    X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
     disk_format = requestHeader.get("disk_format", "RAW")
     min_disk = requestHeader.get("min_disk", 0)
     min_ram = requestHeader.get("min_ram", 0)
     name = requestHeader.get("name", get_random_string(16))
 
-    ##uploadurl = api.createImageInfo(X_AUTH_TOKEN, disk_format, int(min_disk), int(min_ram), name)
+    uploadurl = glance.createImageInfo(X_AUTH_TOKEN, disk_format, int(min_disk), int(min_ram), name)
 
     filename = ''
     if request.method == 'POST':
@@ -271,14 +278,16 @@ def createImage():
     filedir = UPLOAD_FOLDER + '/' + filename
     command = "openstack image create --disk-format %s --min-disk %d --min-ram %d --file %s --public %s" % (disk_format, int(min_disk), int(min_ram), filedir, name)
     os.system(command)
+
     print(command)
-    ##upload_command = '''curl -i -X PUT -H "X-Auth-Token: %s" -H "Content-Type: application/octet-stream" -d @%s %s''' \
-    ##    % (X_AUTH_TOKEN, filedir, uploadurl)
-    ##os.system(upload_command)
-    ##os.system('rm '+filedir)
+    upload_command = '''curl -i -X PUT -H "X-Auth-Token: %s" -H "Content-Type: application/octet-stream" -d '%s' %s''' \
+        % (X_AUTH_TOKEN, request.files['file'].read(), uploadurl)
+    os.system(upload_command)
+    os.system('rm '+filedir)
     
     return {}
 
+## 강의를 위해 마련된 가상환경에 접속하기 위해서 콘솔을 생성합니다. 
 @app.route('/api/stack/console', methods=['POST'])
 def getInstanceConsole():
     requestHeader = request.headers
@@ -290,10 +299,11 @@ def getInstanceConsole():
 
     instance_list = heat.getInstanceInfo(X_AUTH_TOKEN, tenant_id, stack_name, stack_id)
     instance = instance_list[0]
-    console_info = enroll.getInstanceConsole(X_AUTH_TOKEN, instance.get("physical_resource_id", None))
+    console_info = lecture.getInstanceConsole(X_AUTH_TOKEN, instance.get("physical_resource_id", None))
 
     return json.dumps(console_info)
 
+## 특정 사용자의 id와 강의의 id를 받아 해당 강의에 대해 수강신청한 사실이 있는지 확인합니다. 
 @app.route('/api/stack/enrollcheck', methods=['GET'])
 def getEnrolledInformation():
     requestHeader = request.headers
@@ -304,6 +314,18 @@ def getEnrolledInformation():
 
     return json.dumps({"enrolled": info != None})
 
+## 강의에 등록되어있는 경우 바로 콘솔의 링크를 되돌려주고 없으면 수강등록처리하고 돌려줍니다. 
+@app.route('/api/stack/owner', methods=['GET'])
+def getOwner():
+    requestHeader = request.headers
+    stack_id = requestHeader.get("stack_id", None)
+
+    owner = lecture.getOwner(stack_id)
+
+    return json.dumps({'owner': owner})
+
+
+## 강의에 등록되어있는 경우 바로 콘솔의 링크를 되돌려주고 없으면 수강등록처리하고 돌려줍니다. 
 @app.route('/api/stack/enrollconsole', methods=['POST'])
 def enroll():
     requestHeader = request.headers
@@ -316,6 +338,8 @@ def enroll():
 
     return json.dumps(lecture.enrollStudent(X_AUTH_TOKEN, tenant_id, stack_name, stack_id, student_id))
 
+## 글의 내용을 우선적으로 등록합니다. 파일 첨부 관련 기능은 별도로 나눴습니다. 
+## 글의 내용만 텍스트 파일로 저장하고, 첨부파일은 이름만 데이터베이스에 저장해둔 뒤 다음 단계에서 저장한다. 
 @app.route('/api/board/thread', methods=['POST'])
 def boardWrite():
     requestHeader = request.headers
@@ -333,6 +357,8 @@ def boardWrite():
     print(result)
     return json.dumps(result)
 
+## 게시물의 첨부파일을 저장합니다. 
+## 이미지 첨부와 동일하게 flask서버를 이용하여 서버 컴퓨터로 파일을 받아온 뒤에 swift에 저장합니다. 
 @app.route('/api/board/file', methods=['POST', 'GET'])
 def uploadFile():
     requestHeader = request.headers
@@ -342,6 +368,12 @@ def uploadFile():
     tenant_id = requestHeader.get("tenant_id", None)
     filename = requestHeader.get("filename", None)
     foldername = requestHeader.get("foldername", None)
+    if request.method == "GET": 
+        X_AUTH_TOKEN = request.args.get("token")
+        student_id = request.args.get("student_id")
+        tenant_id = request.args.get("tenant_id")
+        filename = request.args.get("filename")
+        foldername = request.args.get("foldername")
 
     if request.method == 'POST':
         # check if the post request has the file part
@@ -366,8 +398,9 @@ def uploadFile():
     else: 
         print(filename)
         result = swift.fetchFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, filename)
-        return Response(result, content_type="application/octet-stream")
+        return Response(result, headers={"Content-Disposition": "attachment; filename=%s" % (filename)}, content_type="application/octet-stream")
 
+## 작성된 게시글 내용과 첨부파일을 불러옵니다. 데이터베이스를 통해 추출합니다. 
 @app.route('/api/board/fetchpost', methods=['GET'])
 def fetchPost():
     requestHeader = request.headers
@@ -383,6 +416,7 @@ def fetchPost():
 
     return result.text
 
+## 게시판에 작성되었던 글 목록을 전부 호출합니다. 
 @app.route('/api/board/fetchall', methods=['GET'])
 def fetchAll():
     results = swift.fetchPost()
@@ -390,6 +424,7 @@ def fetchAll():
         result['written'] = result['written'].strftime("%Y-%m-%d %H:%M")
     return json.dumps(results)
 
+## 글을 삭제합니다. 이 때 파일은 남겨두고 데이터베이스에서만 삭제합니다. 
 @app.route('/api/board/delete', methods=['DELETE'])
 def deletePost():
     requestHeader = request.headers
@@ -404,19 +439,14 @@ def deletePost():
 
     return ''
 
-@app.route('/dbinit', methods=['POST'])
+## 데이터베이스를 설치합니다. 반드시 한 번 이 api를 호출한 뒤에 실행하셔야합니다. 
+@app.route('/dbinit', methods=['POST', 'GET'])
 def dbinit():
     return json.dumps(api.startDB())
 
-@app.route('/api/board/test', methods=['GET'])
-def filetest():
-    url = api.localhost + ":8080/v1/AUTH_ac09f439d0d941c39060b52864146c62/test/20200830T152601_1299956523238453248_2_Egpff3kVgAYy65C.jpg"
-    rHeader = { 'X-Auth-Token': "gAAAAABfK64mNuoSqG-fLUqY2NXBqhALbHfYk-fLgRvMgQdh1jepcrIk44YZqbOEQb8Q_FUFZpUeaCaeo4SujJxI2FHD47FSLmHrEr4EU9fHeeZ9p4MvPZ3xtPYPqEgJ91E4Sxz6PS52JNNtKUulZXdY1cOJriBAL8yedDunofCxtvSdqL61arw" }
-    print(url)
-    result = requests.get(url, headers=rHeader)
-
-    return Response(result, content_type="application/octet-stream")
-
+## 0.0.0.0은 위 api가 실행되는 IP 주소를 의미하며 0.0.0.0은 자신을 뜻하므로 현재 이 컴퓨터의 인터넷 IP주소를 의미합니다. 
+## Port는 이 api를 접속할 때 쓰는 "문"의 번호라고 보면 되며 보통 <IP>:<PORT>의 양식으로 표시됩니다. 
+## 예를 들어 IP 주소가 164.125.70.19인데 Port 번호가 16384이면 외부에서는 이 컴퓨터로 접속할 시 164.125.70.19:16384라고 호출하시면 됩니다. 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=16384)
 

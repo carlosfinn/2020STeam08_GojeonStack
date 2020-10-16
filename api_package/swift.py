@@ -4,6 +4,13 @@ import requests, json, pymysql
 localhost = "http://164.125.70.19"
 
 
+##initContainer
+def initContainer(X_AUTH_TOKEN: str, tenant_id: str):
+    url = "%s:8080/v1/AUTH_%s/test" % (localhost, tenant_id)
+    rHeader = { 'X-Auth-Token': X_AUTH_TOKEN }
+
+    result = requests.put(url, headers=rHeader)
+
 ## uploadFile
 ## 기능 : 파일을 저장하는 기능
 ## Openstack에서는 파일 저장 및 관리를 담당하는 Swift라는 컴포넌트가 있는데 이를 통해 파일을 관리할 수 있습니다. 
@@ -42,6 +49,7 @@ def fetchFile(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: st
 ## 글은 기본적으로 첨부파일 + 글의 텍스트 파일로 구성되어 Swift 안에 한 폴더에 저장됩니다. 
 
 def uploadPost(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: str, filename: str, title:str, content: str, upload_filename: str):
+    initContainer(X_AUTH_TOKEN, tenant_id)
     uploadFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, filename, content)
 
     lecture_sign_up_list = pymysql.connect(

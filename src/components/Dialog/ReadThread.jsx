@@ -15,6 +15,7 @@ import TableCell from "@material-ui/core/TableCell";
 import fs from 'fs';
 
 import { withStyles } from '@material-ui/core/styles';
+//import fileDownload from 'js-file-download';
 
 const styles = theme => ({
     hidden: {
@@ -37,14 +38,14 @@ class ReadThread extends React.Component {
             date: this.props.written, 
             content: '',
             "X-Auth-Token": this.props.token, 
-            deletable: this.props.deletable
+            deletable: this.props.deletable, 
+            file_url: ''
         }
 
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
         this.handleValueChange = this.handleValueChange.bind(this);
         this.handleClickOpen = this.handleClickOpen.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        this.downloadFile = this.downloadFile.bind(this);
     }
     
     handleClickOpen() {
@@ -71,51 +72,6 @@ class ReadThread extends React.Component {
         fetch(url, request).then((response) => response.text()).then((data) => this.setState({
             content: data
         }))
-    }
-
-    downloadFile() {
-        const url = 'http://164.125.70.19:16384/api/board/file';
-
-        const request = {
-            method: 'GET', 
-            headers: {
-                "X-Auth-Token": this.state["X-Auth-Token"], 
-                foldername: this.state.foldername, 
-                student_id: this.state.student_id, 
-                tenant_id: this.state.tenant_id, 
-                filename: this.state.filename,
-                'Content-Type': 'application/octet-stream'
-            }
-        }
-
-        console.log(this.state.filename)
-
-        fetch(url, request).then((response) => response.blob()).then((blob) => {
-            // 2. Create blob link to download
-            const url = window.URL.createObjectURL(new Blob([blob]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', this.state.filename);
-
-            // 3. Append to html page
-            document.body.appendChild(link);
-
-            // 4. Force download
-            link.click();
-
-            // 5. Clean up and remove the link
-            link.parentNode.removeChild(link);
-            this.setState({
-                loading: false
-            });
-        }).catch((error) => {
-            error.json().then((json) => {
-                this.setState({
-                    errors: json,
-                    loading: false
-                });
-            })
-        });;
     }
     
     handleValueChange(e) {
@@ -165,6 +121,8 @@ class ReadThread extends React.Component {
     
     render() {
         const { classes } = this.props;
+        var url = 'http://164.125.70.19:16384/api/board/file?token=' + this.state["X-Auth-Token"] + 
+            '&foldername=' + this.state.foldername + '&student_id=' + this.state.student_id + '&tenant_id=' + this.state.tenant_id + '&filename=' + this.state.filename;
         let deleteButton;
 
         if (this.state.deletable) deleteButton = <Button variant="contained" color="primary" onClick={this.handleFormSubmit}>Delete</Button>;
@@ -182,7 +140,7 @@ class ReadThread extends React.Component {
                             <DialogContent>
                                 <TextField label="title" type="text" name="title" style={{width:500}} InputProps={{readOnly: true}} value={this.state.title} error={!this.state.title} onChange={this.handleValueChange} margin="normal"/><br/>
                                 <TextField label="content" type="number" name="content" style={{width:500}} InputProps={{readOnly: true}} rows={10} multiline value={this.state.content} error={!this.state.title} onChange={this.handleValueChange} margin="normal"/><br/>
-                                <a onClick={this.downloadFile}>{this.state.filename}</a>
+                                <a href={url} download={this.state.filename}>{this.state.filename}</a>
                             </DialogContent>
                         <DialogActions>
                             {deleteButton}
@@ -198,6 +156,8 @@ class ReadThread extends React.Component {
                 </TableCell>
             </TableRow>
         );
+        //onClick={this.downloadFile}
+        //href={this.state.file_url} 
     }
 }    
 export default withStyles(styles)(ReadThread);

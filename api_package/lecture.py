@@ -167,3 +167,22 @@ def enrollStudent(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_id: 
     lecture_sign_up_list.close()
 
     return getInstanceConsole(X_AUTH_TOKEN, instance_id) ## 수강신청이 등록이 이상없으면 자동으로 콘솔을 반환한다. 
+
+
+def getOwner(stack_id: str) -> str:
+    lecture_list = pymysql.connect(
+        user='root',
+        passwd='8nkujc3rf',
+        host='localhost',
+        db='lecture_sign_up_list',
+        charset='utf8'
+    )
+
+    cursor = lecture_list.cursor(pymysql.cursors.DictCursor)
+    query = "select creator_id from lectures where lecture_id='%s'" % (stack_id)
+    cursor.execute(query)
+
+    result = cursor.fetchall()
+    first = result[0]
+
+    return first.get("creator_id", None)

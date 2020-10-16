@@ -17,7 +17,7 @@ def startDB():
 
     cursor = lecture_sign_up_list.cursor(pymysql.cursors.DictCursor)
     cursor.execute(
-        '''create table threads(id int(16) not null auto_increment primary key, title varchar(255) not null, content varchar(255) not null, filename varchar(255), foldername varchar(255) not null, student_id varchar(255) not null);'''
+        '''create table threads(id int(16) not null auto_increment primary key, title varchar(255) not null, content varchar(255) not null, filename varchar(255), foldername varchar(255) not null, student_id varchar(255) not null, written Datetime(6));'''
     )
     cursor.execute(
         '''create table sign_up_list (lecture_id varchar(255) not null, student_id varchar(255) not null, lecture_order int(16) unsigned not null, vm_id varchar(255) not null);'''

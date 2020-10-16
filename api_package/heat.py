@@ -67,13 +67,12 @@ def createInstance(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, image: st
                         }], 
                         "config_drive": True, "user_data_format": "RAW", 
                         "user_data": initial_command + env_setting + accountSettingCMD(personeel), 
-                        "key_name": "babo"
+                        ##"key_name": "babo"
                     }
                 }
             }
         }
     }
-    print("cmdrum dump :", initial_command + env_setting + accountSettingCMD(personeel))
 
     requestResult = requests.post(url, headers=rHeaders, data=json.dumps(rBody))
     requestResult.raise_for_status()

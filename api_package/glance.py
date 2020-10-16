@@ -31,7 +31,7 @@ def getImageList(X_AUTH_TOKEN: str):
 ## createImageInfo
 ## 기능 : 이미지의 정보를 등록한다. 
 ## 관련 : Openstack Glance (이미지 컴포넌트)
-## 이미지 파일 원본을 제외한 이미지를 등록한다. 
+## 이미지 파일 원본을 제외한 이미지를 등록한다. 그 이후 이미지 파일에 대한 url를 반환하여 파일 첨부를 할 수 있게 한다. 
 
 def createImageInfo(X_AUTH_TOKEN :str, disk_format: str, min_disk: str, min_ram: str, name: str):
     rHeaders = {

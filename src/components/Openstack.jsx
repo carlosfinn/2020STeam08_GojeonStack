@@ -42,6 +42,7 @@ class StackInfo extends React.Component {
       student_id: this.props.student_id, 
       stack_id: this.props.stack_id, 
       stack_name: this.props.stack_name, 
+      owner: '', 
       enrolleddata: {}, 
       studentconsole: {}
     }
@@ -52,6 +53,20 @@ class StackInfo extends React.Component {
         if (this.state.enrolleddata.enrolled) this.enrollStudent();
       },10000);
     } else this.getConsoleLink();
+
+    this.getOwner();
+  }
+
+  getOwner() {
+    const check_url = "http://164.125.70.19:16384/api/stack/owner";
+    fetch(check_url, {
+      method: 'GET', 
+      headers: {
+        "stack_id": this.state.stack_id
+      }
+    }).then((res) => res.json()).then((json) => this.setState({
+      owner: json.owner
+    }));
   }
 
   getConsoleLink() {
@@ -145,8 +160,9 @@ class StackInfo extends React.Component {
         LectureConsole = <a href={this.state.studentconsole.url}>Go to console</a>;
       }
     } else {
-      DeleteButton = <Button variant="contained" color="primary" onClick={this.DeleteStack.bind(this)}>DELETE</Button>;
-      LectureConsole = <a href={this.state.consoleData.url}>Go to console</a>;
+      if (this.state.student_id == this.state.owner) DeleteButton = <Button variant="contained" color="primary" onClick={this.DeleteStack.bind(this)}>DELETE</Button>;
+      if (this.state.consoleData.url) LectureConsole = <a href={this.state.consoleData.url}>Go to console</a>;
+      else LectureConsole = <a>The Lecture is still being creating</a>;
     }
 
     return (
@@ -208,7 +224,7 @@ class StackInfo extends React.Component {
             <Accessibility />
           </CardIcon>
           <p className={this.props.cardCategory}>Owner (Instructor)</p>
-          <h3 className={this.props.cardTitle}>{this.props.stack_owner == null? "ALL": this.props.stack_owner}</h3>
+          <h3 className={this.props.cardTitle}>{this.state.owner}</h3>
         </CardHeader>
         <CardFooter>
           <div className={this.props.stats}>
