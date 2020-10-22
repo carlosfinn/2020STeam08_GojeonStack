@@ -371,9 +371,31 @@ def boardWrite():
     content = requestBody.get("content", None)
     result = swift.uploadPost(X_AUTH_TOKEN, student_id, tenant_id, str(uuid.uuid4()), str(uuid.uuid4()), title, content.encode('utf-8'), filename)
 
-    print(result)
     return json.dumps(result)
 
+## 글의 내용을 우선적으로 등록합니다. 파일 첨부 관련 기능은 별도로 나눴습니다. 
+## 글의 내용만 텍스트 파일로 저장하고, 첨부파일은 이름만 데이터베이스에 저장해둔 뒤 다음 단계에서 저장한다. 
+@app.route('/api/board/modify', methods=['POST'])
+def boardModify():
+    requestHeader = request.headers
+    requestBody = json.loads(request.get_data())
+    print("zero step finished")
+
+    X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
+    student_id = requestHeader.get("student_id", None)
+    tenant_id = requestHeader.get("tenant_id", None)
+    foldername = requestHeader.get("foldername", None)
+    threadname = requestHeader.get("content", None)
+    dbid = requestHeader.get("id", None)
+
+    title = requestBody.get("title", None)
+    content = requestBody.get("content", None)
+    print("first step finished")
+    print(content)
+    swift.modifyPost(X_AUTH_TOKEN, student_id, tenant_id, foldername, threadname, title, content.encode('utf-8'), dbid)
+
+    return json.dumps({})
+    
 ## 게시물의 첨부파일을 저장합니다. 
 ## 이미지 첨부와 동일하게 flask서버를 이용하여 서버 컴퓨터로 파일을 받아온 뒤에 swift에 저장합니다. 
 @app.route('/api/board/file', methods=['POST', 'GET'])

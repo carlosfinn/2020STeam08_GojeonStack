@@ -41,10 +41,12 @@ class ReadThread extends React.Component {
             file_url: ''
         }
 
-        this.handleFormSubmit = this.handleFormSubmit.bind(this);
+        this.handleDeletion = this.handleDeletion.bind(this);
+        this.handleModification = this.handleModification.bind(this);
         this.handleValueChange = this.handleValueChange.bind(this);
         this.handleClickOpen = this.handleClickOpen.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.modifyPost = this.modifyPost.bind(this);
     }
     
     handleClickOpen() {
@@ -101,8 +103,43 @@ class ReadThread extends React.Component {
         })
     }
 
-    handleFormSubmit(e) {
+    modifyPost() {
+        const url = 'http://164.125.70.19:16384/api/board/modify';
+
+        console.log("called")
+        const request = {
+            method: 'POST', 
+            headers: {
+                "X-Auth-Token": this.state["X-Auth-Token"], 
+                foldername: this.state.foldername, 
+                student_id: this.state.student_id, 
+                tenant_id: this.state.tenant_id, 
+                id: this.state.thread_id, 
+                content: this.state.content_fname
+            },
+            body: JSON.stringify({
+                content: this.state.content, 
+                title: this.state.title
+            })
+        }
+
+        fetch(url, request).then((response) => {
+            if (response.ok) alert("Modified successfully");
+            else alert("Modification Error");
+        })
+    }
+
+    handleDeletion(e) {
         this.deletePost();
+        this.setState({
+            content: "", 
+            subject: "", 
+            open: false
+        });
+    }
+
+    handleModification(e) {
+        this.modifyPost();
         this.setState({
             content: "", 
             subject: "", 
@@ -122,36 +159,43 @@ class ReadThread extends React.Component {
         const { classes } = this.props;
         var url = 'http://164.125.70.19:16384/api/board/file?X-Auth-Token=' + this.state["X-Auth-Token"] + 
             '&foldername=' + this.state.foldername + '&student_id=' + this.state.student_id + '&tenant_id=' + this.state.tenant_id + '&filename=' + this.state.filename;
-        let deleteButton;
+        let deleteButton, editButton;
 
-        if (this.state.deletable) deleteButton = <Button variant="contained" color="primary" onClick={this.handleFormSubmit}>Delete</Button>;
-        else deleteButton = null;
+        if (this.state.deletable) {
+            deleteButton = <Button variant="contained" color="primary" name="delete" onClick={this.handleDeletion}>Delete</Button>;
+            editButton = <Button variant="contained" color="primary" name="modify" onClick={this.handleModification}>Edit</Button>;
+        }
+        else {
+            deleteButton = null;
+            editButton = null;
+        }
 
         return (
             <TableRow className={classes.tableBodyRow}>
                 <TableCell className={classes.tableCell}>
-                    {this.state.thread_id}
+                    {this.props.thread_id}
                 </TableCell>
                 <TableCell className={classes.tableCell}>
-                    <a onClick={this.handleClickOpen}>{this.state.title}</a>
+                    <a onClick={this.handleClickOpen}>{this.props.title}</a>
                     <Dialog open={this.state.open} onClose={this.handleClose}>
                         <DialogTitle>Read posts</DialogTitle>
                             <DialogContent>
-                                <TextField label="title" type="text" name="title" style={{width:500}} InputProps={{readOnly: true}} value={this.state.title} error={!this.state.title} onChange={this.handleValueChange} margin="normal"/><br/>
-                                <TextField label="content" type="number" name="content" style={{width:500}} InputProps={{readOnly: true}} rows={10} multiline value={this.state.content} error={!this.state.title} onChange={this.handleValueChange} margin="normal"/><br/>
+                                <TextField label="title" type="text" name="title" style={{width:500}} InputProps={{readOnly: !this.props.deletable}} value={this.state.title} error={!this.state.title} onChange={this.handleValueChange} margin="normal"/><br/>
+                                <TextField label="content" type="number" name="content" style={{width:500}} InputProps={{readOnly: !this.props.deletable}} rows={10} multiline value={this.state.content} error={!this.state.title} onChange={this.handleValueChange} margin="normal"/><br/>
                                 <a href={url} download={this.state.filename}>{this.state.filename}</a>
                             </DialogContent>
                         <DialogActions>
                             {deleteButton}
+                            {editButton}
                             <Button variant="outlined" color="primary" onClick={this.handleClose}>Close</Button>
                         </DialogActions>
                     </Dialog>
                 </TableCell>
                 <TableCell className={classes.tableCell}>
-                    {this.state.student_id}
+                    {this.props.student_id}
                 </TableCell>
                 <TableCell className={classes.tableCell}>
-                    {this.state.date}
+                    {this.props.written}
                 </TableCell>
             </TableRow>
         );

@@ -70,6 +70,29 @@ def uploadPost(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: s
     return { 'filename': upload_filename, 'foldername': foldername }
 
 
+## modifyPost
+## 기능 : 게시물을 수정하는 기능
+def modifyPost(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: str, threadname: str, title:str, content: str, dbid: int):
+    uploadFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, threadname, content)
+    print("second step finished")
+
+    lecture_sign_up_list = pymysql.connect(
+        user='root',
+        passwd='8nkujc3rf',
+        host='localhost',
+        db='lecture_sign_up_list',
+        charset='utf8'
+    )
+
+    cursor = lecture_sign_up_list.cursor(pymysql.cursors.DictCursor)
+    query = '''update threads set title='{title}', written=NOW() WHERE id={id}'''.format(title=title, id=dbid)
+    cursor.execute(query)
+
+    lecture_sign_up_list.commit()
+    lecture_sign_up_list.close()
+
+    return {}
+
 ## fetchPost
 ## 기능 : 글 목록 가져오기
 ## Openstack에서는 파일 저장 및 관리를 담당하는 Swift라는 컴포넌트가 있는데 이를 통해 파일을 관리할 수 있습니다. 
