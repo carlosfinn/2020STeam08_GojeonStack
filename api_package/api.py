@@ -30,4 +30,3 @@ def startDB():
     lecture_sign_up_list.close()
 
     return {}
-

@@ -85,7 +85,6 @@ class CreateThread extends React.Component {
                     "X-Auth-Token": this.state["X-Auth-Token"], 
                     tenant_id: this.state.tenant_id, 
                     student_id: this.state.student_id, 
-                    filename: FileInfo.filename, 
                     foldername: FileInfo.foldername
                 }, 
                 body: data
@@ -97,12 +96,6 @@ class CreateThread extends React.Component {
             if (Response.status <= 210) alert("The post was uploaded");
             else alert("Posting has been canceled by some reasons");
         }
-        /*{
-            if (response.status <= 210) alert("The post was uploaded");
-            else {
-                alert("Image updating has been canceled by some reasons");
-            }
-        } */
     }
 
     handleFormSubmit(e) {

@@ -168,7 +168,11 @@ def enrollStudent(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_id: 
 
     return getInstanceConsole(X_AUTH_TOKEN, instance_id) ## 수강신청이 등록이 이상없으면 자동으로 콘솔을 반환한다. 
 
-
+## getOwner
+## 입력 : 강의의 id가 있어야함. 
+## 기능 : 특정 강의의 생성자의 id 확인
+## 관련 : mysql 데이터베이스
+## 특정 강의의 생성자 id를 확인한다. 
 def getOwner(stack_id: str) -> str:
     lecture_list = pymysql.connect(
         user='root',

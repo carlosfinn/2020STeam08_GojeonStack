@@ -1,3 +1,5 @@
+#-*- coding:utf-8 -*-
+
 ## 필요한 패키지를 import합니다. 가급적 건드리지 마시기 바랍니다. 
 from flask import Flask, request, make_response, flash, redirect, Response
 from flask_cors import CORS
@@ -162,9 +164,12 @@ def createStack():
     language = requestBody.get("language", '')
     creator_id = requestBody.get("creator_id", '')
 
+    swift.createKeypair(X_AUTH_TOKEN, stack_name, tenant_id)
     result = heat.createInstance(X_AUTH_TOKEN, tenant_id, stack_name, image, vcpus, ram, disk, int(personeel), language, creator_id)
     print(X_AUTH_TOKEN, tenant_id, stack_name, image, vcpus, ram, disk)
     return json.dumps(result)
+
+
 
 ## 강의(stack)에 대한 정보를 추출합니다. 이 때 정보란 강의에 대한 데이터베이스 정보가 아니라, Openstack 내에서의 자원의 단위인 stack으로써의 강의를 말합니다. 
 @app.route('/api/stack/details', methods=['GET'])
@@ -207,8 +212,9 @@ def deleteStack():
     stack_id = requestBody.get("stack_id", None)
 
     result = heat.deleteStack(X_AUTH_TOKEN, tenant_id, stack_name, stack_id)
+    result = swift.deleteKeypair(X_AUTH_TOKEN, tenant_id, stack_name)
 
-    return json.dumps(result)
+    return json.dumps({})
 
 ### 여기는 이미지와 관련된 웹 api 부분입니다. 
 ## 선택한 이미지를 삭제합니다. 
@@ -260,12 +266,12 @@ def createImage():
     min_ram = requestHeader.get("min_ram", 0)
     name = requestHeader.get("name", get_random_string(16))
 
+    if len(disk_format) <= 0: disk_format = ''
     uploadurl = glance.createImageInfo(X_AUTH_TOKEN, disk_format, int(min_disk), int(min_ram), name)
 
     filename = ''
     if request.method == 'POST':
         # check if the post request has the file part
-        print(request.files)
         if 'file' not in request.files:
             flash('No file part')
         uploadfile = request.files['file']
@@ -278,14 +284,10 @@ def createImage():
             uploadfile.save(os.path.join(app.config['UPLOAD_FOLDER'], uploadfile.filename))
 
     filedir = UPLOAD_FOLDER + '/' + filename
-    command = "openstack image create --disk-format %s --min-disk %d --min-ram %d --file %s --public %s" % (disk_format, int(min_disk), int(min_ram), filedir, name)
-    os.system(command)
 
-    print(command)
-    upload_command = '''curl -i -X PUT -H "X-Auth-Token: %s" -H "Content-Type: application/octet-stream" -d '%s' %s''' \
-        % (X_AUTH_TOKEN, request.files['file'].read(), uploadurl)
-    os.system(upload_command)
-    os.system('rm '+filedir)
+    command = '''curl -i -X PUT -H "X-Auth-Token: {token}" -H "X-Image-Meta-Store: {store_identifier}" -H "Content-Type: application/octet-stream" --data-binary @{filedir} {url}''' .format(token=X_AUTH_TOKEN, store_identifier="swift", filedir=filedir, url=uploadurl)
+    os.system(command)
+    os.system("rm {dir}".format(dir=filedir))
     
     return {}
 
@@ -304,6 +306,18 @@ def getInstanceConsole():
     console_info = lecture.getInstanceConsole(X_AUTH_TOKEN, instance.get("physical_resource_id", None))
 
     return json.dumps(console_info)
+
+## 게시물의 첨부파일을 저장합니다. 
+## 이미지 첨부와 동일하게 flask서버를 이용하여 서버 컴퓨터로 파일을 받아온 뒤에 swift에 저장합니다. 
+@app.route('/api/stack/sshkey', methods=['GET'])
+def getInstanceSSHKey():
+    argheader = request.args
+    X_AUTH_TOKEN = argheader.get("X-Auth-Token", None)
+    stack_name = argheader.get("stack_name", None)
+    tenant_id = argheader.get("tenant_id", None)
+
+    result = swift.fetchKeypair(X_AUTH_TOKEN, tenant_id, stack_name)
+    return Response(result, headers={"Content-Disposition": "attachment; filename=%s" % ('keypair-' + stack_name + ".pem")}, content_type="application/octet-stream")
 
 ## 특정 사용자의 id와 강의의 id를 받아 해당 강의에 대해 수강신청한 사실이 있는지 확인합니다. 
 @app.route('/api/stack/enrollcheck', methods=['GET'])
@@ -355,7 +369,8 @@ def boardWrite():
 
     title = requestBody.get("title", None)
     content = requestBody.get("content", None)
-    result = swift.uploadPost(X_AUTH_TOKEN, student_id, tenant_id, str(uuid.uuid4()), str(uuid.uuid4()), title.encode('utf-8'), content.encode('utf-8'), filename)
+    result = swift.uploadPost(X_AUTH_TOKEN, student_id, tenant_id, str(uuid.uuid4()), str(uuid.uuid4()), title, content.encode('utf-8'), filename)
+
     print(result)
     return json.dumps(result)
 
@@ -365,21 +380,22 @@ def boardWrite():
 def uploadFile():
     requestHeader = request.headers
 
-    X_AUTH_TOKEN = requestHeader.get("X-Auth-Token", None)
-    student_id = requestHeader.get("student_id", None)
-    tenant_id = requestHeader.get("tenant_id", None)
-    filename = requestHeader.get("filename", None)
-    foldername = requestHeader.get("foldername", None)
-    if request.method == "GET": 
-        X_AUTH_TOKEN = request.args.get("token")
-        student_id = request.args.get("student_id")
-        tenant_id = request.args.get("tenant_id")
-        filename = request.args.get("filename")
-        foldername = request.args.get("foldername")
+    argheader = dict()
+    X_AUTH_TOKEN = ''
+
+    if request.method == "GET":
+        argheader = request.args
+    else: 
+        argheader = requestHeader
+ 
+    X_AUTH_TOKEN = argheader.get("X-Auth-Token", None)   
+    student_id = argheader.get("student_id", None)
+    filename = argheader.get("filename", None)
+    tenant_id = argheader.get("tenant_id", None)
+    foldername = argheader.get("foldername", None)
 
     if request.method == 'POST':
         # check if the post request has the file part
-        print(request.files)
         if 'file' not in request.files:
             flash('No file part')
         file = request.files['file']
@@ -398,9 +414,8 @@ def uploadFile():
         os.system('rm '+filedir)
         return {}
     else: 
-        print(filename)
         result = swift.fetchFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, filename)
-        return Response(result, headers={"Content-Disposition": "attachment; filename=%s" % (filename)}, content_type="application/octet-stream")
+        return Response(result, headers={"Content-Disposition": "attachment; filename=%s" % (filename.encode("euc-kr"))}, content_type="application/octet-stream;")
 
 ## 작성된 게시글 내용과 첨부파일을 불러옵니다. 데이터베이스를 통해 추출합니다. 
 @app.route('/api/board/fetchpost', methods=['GET'])
@@ -414,7 +429,6 @@ def fetchPost():
     foldername = requestHeader.get("foldername", None)
     
     result = swift.fetchFile(X_AUTH_TOKEN, student_id, tenant_id, foldername, filename)
-    print(result.text)
 
     return result.text
 

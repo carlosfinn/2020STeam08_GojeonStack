@@ -1,8 +1,9 @@
-#-*- coding:utf-8 -*-
 import requests, json, pymysql
+import heat
 
 ## 작성자 : 전민규
 ## 기능 : 강의생성 및 관리, 강의삭제에 관련된 api 기능
+## ssh에 접속하기 위해 필요한 keypair는 Swift에 저장해둔 뒤 다운로드하여 사용자가 직접 사용하는 방식이므로 다르게 swift.py 파일을 보십시오. 
 
 localhost = "http://164.125.70.19"
 
@@ -67,7 +68,7 @@ def createInstance(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, image: st
                         }], 
                         "config_drive": True, "user_data_format": "RAW", 
                         "user_data": initial_command + env_setting + accountSettingCMD(personeel), 
-                        ##"key_name": "babo"
+                        "key_name": "keypair-%s" % (stack_name)
                     }
                 }
             }

@@ -3,6 +3,9 @@ import requests, json, pymysql
 
 ## glance는 이미지를 관리하는 오픈스택 내의 구성요소입니다. 
 ## 이미지는 가상머신을 구동할 때 OS의 역할을 하는 파일입니다. 
+## 이미지의 경우 아파치 서버의 문제 때문에 여기에 작성되지 않고 api 서버를 위한 파일인 dashboard.py 파일에 구현된 부분이 있습니다. 
+## 이 부분의 경우 오픈스택 내의 웹API가 아닌 명령어 방식인 CLI를 사용했으므로 해당 사항에 대해서는 아래를 참고 바랍니다. 
+## https://docs.openstack.org/python-openstackclient/latest/cli/command-objects/image-v2.html
 
 localhost = "http://164.125.70.19"
 

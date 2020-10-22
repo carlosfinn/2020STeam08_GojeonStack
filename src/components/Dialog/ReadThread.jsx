@@ -29,7 +29,6 @@ class ReadThread extends React.Component {
         this.state = {
             title: this.props.title, 
             content_fname: this.props.content, 
-            //subject: this.props.subject, 
             thread_id: this.props.thread_id, 
             filename: this.props.filename, 
             foldername: this.props.foldername, 
@@ -121,7 +120,7 @@ class ReadThread extends React.Component {
     
     render() {
         const { classes } = this.props;
-        var url = 'http://164.125.70.19:16384/api/board/file?token=' + this.state["X-Auth-Token"] + 
+        var url = 'http://164.125.70.19:16384/api/board/file?X-Auth-Token=' + this.state["X-Auth-Token"] + 
             '&foldername=' + this.state.foldername + '&student_id=' + this.state.student_id + '&tenant_id=' + this.state.tenant_id + '&filename=' + this.state.filename;
         let deleteButton;
 
