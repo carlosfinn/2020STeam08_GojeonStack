@@ -4,6 +4,7 @@ from flask_cors import CORS
 import requests, json, os
 import random, string, time, uuid, subprocess
 import api, auth, heat, glance, lecture, swift
+import chardet
 
 
 ## random_string을 생성합니다. 
@@ -19,6 +20,7 @@ app = Flask(__name__)
 UPLOAD_FOLDER = '../imageBuffer'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = b'x9@Q!2vC8o*'
+app.config['JSON_AS_ASCII'] = False
 
 
 ## chrome 등등의 대다수의 브라우저들은 CORS라는 출처동일의 원칙을 적용하므로 이에 대한 사전설정을 수행해야합니다. 
@@ -353,7 +355,7 @@ def boardWrite():
 
     title = requestBody.get("title", None)
     content = requestBody.get("content", None)
-    result = swift.uploadPost(X_AUTH_TOKEN, student_id, tenant_id, str(uuid.uuid4()), str(uuid.uuid4()), title, content, filename)
+    result = swift.uploadPost(X_AUTH_TOKEN, student_id, tenant_id, str(uuid.uuid4()), str(uuid.uuid4()), title.encode('utf-8'), content.encode('utf-8'), filename)
     print(result)
     return json.dumps(result)
 

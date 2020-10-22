@@ -1,4 +1,4 @@
-
+#-*- coding:utf-8 -*-
 import requests, json, pymysql
 
 ## glance는 이미지를 관리하는 오픈스택 내의 구성요소입니다. 

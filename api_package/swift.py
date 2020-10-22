@@ -1,4 +1,3 @@
-
 import requests, json, pymysql
 
 localhost = "http://164.125.70.19"
@@ -61,7 +60,8 @@ def uploadPost(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: s
     )
 
     cursor = lecture_sign_up_list.cursor(pymysql.cursors.DictCursor)
-    query = '''insert into threads(title, content, filename, foldername, student_id, written) values('%s', '%s', '%s', '%s', '%s', NOW())''' % (title, filename, upload_filename, foldername, student_id)
+    query = '''insert into threads(title, content, filename, foldername, student_id, written) values('%s', '%s', '%s', '%s', '%s', NOW())''' % (title.decode('utf-8'), filename, upload_filename, foldername, student_id)
+    print(query)
     cursor.execute(query)
 
     lecture_sign_up_list.commit()

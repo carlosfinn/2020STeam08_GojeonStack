@@ -1,4 +1,4 @@
-
+#-*- coding:utf-8 -*-
 import requests, json, pymysql
 
 ## 작성자 : 전민규
