@@ -151,7 +151,9 @@ class StackInfo extends React.Component {
     const isStudent = this.state.role == "Student";
     let DeleteButton;
     let console;
-    let LectureConsole;
+    let LectureConsole, SSHpermissionfile;
+    var SSHKeyurl = 'http://164.125.70.19:16384/api/stack/sshkey?X-Auth-Token=' + this.state["X-Auth-Token"] + '&stack_name=' + this.state.stack_name + '&tenant_id=' + this.state.tenant_id;
+    SSHpermissionfile = <a href={SSHKeyurl}>Get SSH-Authentication Key</a>;
 
     if (isStudent) {
       DeleteButton = <br/>;
@@ -212,7 +214,7 @@ class StackInfo extends React.Component {
         </CardHeader>
         <CardFooter>
           <div className={this.props.stats}>
-              <br></br>
+              {SSHpermissionfile}
           </div>
         </CardFooter>
       </Card>
