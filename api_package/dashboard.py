@@ -480,6 +480,7 @@ def deletePost():
 ## 데이터베이스를 설치합니다. 반드시 한 번 이 api를 호출한 뒤에 실행하셔야합니다. 
 @app.route('/dbinit', methods=['POST', 'GET'])
 def dbinit():
+    api.createDB()
     return json.dumps(api.startDB())
 
 ## 0.0.0.0은 위 api가 실행되는 IP 주소를 의미하며 0.0.0.0은 자신을 뜻하므로 현재 이 컴퓨터의 인터넷 IP주소를 의미합니다. 

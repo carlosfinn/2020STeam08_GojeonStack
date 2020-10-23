@@ -6,6 +6,23 @@ localhost = "http://164.125.70.19"
 ## 시스템을 사용하기 전에 데이터베이스를 세팅해줘야합니다. 
 ## 그 과정을 수행하는 것입니다. 
 
+def createDB():
+    lecture_sign_up_list = pymysql.connect(
+        user='root',
+        passwd='8nkujc3rf',
+        host='localhost',
+        charset='utf8'
+    )
+
+    cursor = lecture_sign_up_list.cursor(pymysql.cursors.DictCursor)
+    cursor.execute('create database lecture_sign_up_list;')
+    cursor.execute('alter database lecture_sign_up_list default character set = utf8;')
+
+    lecture_sign_up_list.commit()
+    lecture_sign_up_list.close()
+
+    return {}
+
 def startDB():
     lecture_sign_up_list = pymysql.connect(
         user='root',
