@@ -1,7 +1,7 @@
 
 import requests, json, pymysql
 
-localhost = "http://164.125.70.19"
+localhost = "http://localhost"
 
 ## 시스템을 사용하기 전에 데이터베이스를 세팅해줘야합니다. 
 ## 그 과정을 수행하는 것입니다. 

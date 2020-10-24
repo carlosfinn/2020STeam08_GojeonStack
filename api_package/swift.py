@@ -1,6 +1,6 @@
 import requests, json, pymysql
 
-localhost = "http://164.125.70.19"
+localhost = "http://localhost"
 
 
 ##initContainer

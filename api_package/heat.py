@@ -5,7 +5,7 @@ import heat
 ## 기능 : 강의생성 및 관리, 강의삭제에 관련된 api 기능
 ## ssh에 접속하기 위해 필요한 keypair는 Swift에 저장해둔 뒤 다운로드하여 사용자가 직접 사용하는 방식이므로 다르게 swift.py 파일을 보십시오. 
 
-localhost = "http://164.125.70.19"
+localhost = "http://localhost"
 
 def accountSettingCMD(personeel: int) -> str:
     result = ''

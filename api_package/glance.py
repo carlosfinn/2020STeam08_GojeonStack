@@ -7,7 +7,7 @@ import requests, json, pymysql
 ## 이 부분의 경우 오픈스택 내의 웹API가 아닌 명령어 방식인 CLI를 사용했으므로 해당 사항에 대해서는 아래를 참고 바랍니다. 
 ## https://docs.openstack.org/python-openstackclient/latest/cli/command-objects/image-v2.html
 
-localhost = "http://164.125.70.19"
+localhost = "http://localhost"
 
 
 ## getImageList
