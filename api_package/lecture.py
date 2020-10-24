@@ -8,7 +8,7 @@ import heat
 ## Openstack에서 자원들을 총괄하여 하나로 묶은 단위를 stack이라고 하는데,
 ## 본 시스템에서는 강의의 단위가 stack이므로 stack은 강의 하나를 뜻하게 됩니다. 
 
-localhost = "http://localhost"
+localhost = "http://164.125.70.19"
 
 
 ## getCurrnetStudent
