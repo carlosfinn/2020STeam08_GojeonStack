@@ -1,11 +1,10 @@
 import requests, json, pymysql
-
-localhost = "http://164.125.70.19"
+from localhost import localhost
 
 
 ##initContainer
 def initContainer(X_AUTH_TOKEN: str, tenant_id: str, name: str):
-    url = "%s:8080/v1/AUTH_%s/%s" % (localhost, tenant_id, name)
+    url = "%s:8080/v1/AUTH_%s/%s" % (localhost(), tenant_id, name)
     rHeader = { 'X-Auth-Token': X_AUTH_TOKEN }
 
     result = requests.put(url, headers=rHeader)
@@ -18,7 +17,7 @@ def initContainer(X_AUTH_TOKEN: str, tenant_id: str, name: str):
 ## 이 때 계정을 생성할 때 별도로 container를 생성해줘야 파일을 저장할 수 있습니다. 
 
 def uploadFile(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: str, filename: str, content):
-    url = "%s:8080/v1/AUTH_%s/test/%s/%s/%s" % (localhost, tenant_id, student_id, foldername, filename)
+    url = "%s:8080/v1/AUTH_%s/test/%s/%s/%s" % (localhost(), tenant_id, student_id, foldername, filename)
     rHeader = { 'X-Auth-Token': X_AUTH_TOKEN }
 
     result = requests.put(url, headers=rHeader, data=content)
@@ -32,7 +31,7 @@ def uploadFile(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: s
 ## 이 때 계정을 생성할 때 별도로 container를 생성해줘야 파일을 저장할 수 있습니다. 
 
 def fetchFile(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: str, filename: str):
-    url = localhost + ":8080/v1/AUTH_%s/test/%s/%s/%s" % (tenant_id, student_id, foldername, filename)
+    url = localhost() + ":8080/v1/AUTH_%s/test/%s/%s/%s" % (tenant_id, student_id, foldername, filename)
     print(url)
     rHeader = { 'X-Auth-Token': X_AUTH_TOKEN }
 
@@ -124,7 +123,7 @@ def fetchPost():
 ## 게시물이 표시되지 않도록 글 목록의 데이터베이스에서 해당 글 삭제
 
 def deletePost(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: str, post_id: int):
-    url = localhost + ":8080/v1/AUTH_%s/test/%s/%s" % (tenant_id, student_id, foldername)
+    url = localhost() + ":8080/v1/AUTH_%s/test/%s/%s" % (tenant_id, student_id, foldername)
     ##rHeader = { 'X-Auth-Token': X_AUTH_TOKEN }
     print(url)
     ##result = requests.delete(url, headers=rHeader)
@@ -155,7 +154,7 @@ def deletePost(X_AUTH_TOKEN: str, student_id: str, tenant_id: str, foldername: s
 ## 이 때 계정을 생성할 때 별도로 container를 생성해줘야 파일을 저장할 수 있습니다. 
 
 def uploadKeyPair(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, content: str):
-    url = "%s:8080/v1/AUTH_%s/keypairs/%s" % (localhost, tenant_id, "keypair-%s.pem" % (stack_name))
+    url = "%s:8080/v1/AUTH_%s/keypairs/%s" % (localhost(), tenant_id, "keypair-%s.pem" % (stack_name))
     rHeader = { 'X-Auth-Token': X_AUTH_TOKEN }
 
     result = requests.put(url, headers=rHeader, data=content)
@@ -171,7 +170,7 @@ def uploadKeyPair(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, content: s
 ## 특정 강의의 생성자 id를 확인한다. 
 
 def createKeypair(X_AUTH_TOKEN: str, stack_name: str, tenant_id: str) -> dict:
-    url = localhost + "/compute/v2.1/os-keypairs"
+    url = localhost() + "/compute/v2.1/os-keypairs"
     rBody = {
         "keypair": {
             "name": "keypair-%s" % (stack_name)
@@ -195,7 +194,7 @@ def createKeypair(X_AUTH_TOKEN: str, stack_name: str, tenant_id: str) -> dict:
 ## 그렇기 때문에 인증서가 필요한데 그 인증서를 제공해주는 것입니다. 
 
 def fetchKeypair(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str):
-    url = localhost + ":8080/v1/AUTH_%s/keypairs/keypair-%s.pem" % (tenant_id, stack_name)
+    url = localhost() + ":8080/v1/AUTH_%s/keypairs/keypair-%s.pem" % (tenant_id, stack_name)
     print(url)
     rHeader = { 'X-Auth-Token': X_AUTH_TOKEN }
 
@@ -207,8 +206,8 @@ def fetchKeypair(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str):
 ## 기능 : keypair을 삭제하는 기능
 
 def deleteKeypair(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str):
-    url = localhost + "/compute/v2.1/os-keypairs/keypair-%s" % (stack_name)
-    swifturl = localhost + ":8080/v1/AUTH_%s/keypairs/keypair-%s.pem" % (tenant_id, stack_name)
+    url = localhost() + "/compute/v2.1/os-keypairs/keypair-%s" % (stack_name)
+    swifturl = localhost() + ":8080/v1/AUTH_%s/keypairs/keypair-%s.pem" % (tenant_id, stack_name)
     print(url)
     rHeader = { 'X-Auth-Token': X_AUTH_TOKEN }
 

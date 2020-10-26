@@ -1,6 +1,7 @@
 #-*- coding:utf-8 -*-
 import requests, json, pymysql
 import heat
+from localhost import localhost
 
 ## 작성자 : 전민규
 ## 기능 : 수강신청에 관련된 api 기능
@@ -8,7 +9,6 @@ import heat
 ## Openstack에서 자원들을 총괄하여 하나로 묶은 단위를 stack이라고 하는데,
 ## 본 시스템에서는 강의의 단위가 stack이므로 stack은 강의 하나를 뜻하게 됩니다. 
 
-localhost = "http://164.125.70.19"
 
 
 ## getCurrnetStudent
@@ -52,7 +52,7 @@ def getInstanceConsole(X_AUTH_TOKEN: str, instance_id: str):
         }
     }
 
-    url = localhost + "/compute/v2.1/servers/" + instance_id + "/action"
+    url = localhost() + "/compute/v2.1/servers/" + instance_id + "/action"
     requestResult = requests.post(url, headers=rHeaders, data=json.dumps(rBody))
     requestResult.raise_for_status()
     console_info = requestResult.json()
@@ -63,7 +63,7 @@ def getInstanceConsole(X_AUTH_TOKEN: str, instance_id: str):
     url_split = url_info.get('url', '').split(':')
     port_info = url_split[-1]
 
-    return {'url': localhost + ':' + port_info }
+    return {'url': localhost() + ':' + port_info }
 
     
 ## getEnrolledCount

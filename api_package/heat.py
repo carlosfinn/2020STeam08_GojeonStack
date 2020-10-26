@@ -1,11 +1,11 @@
 import requests, json, pymysql
 import heat
+from localhost import localhost
 
 ## 작성자 : 전민규
 ## 기능 : 강의생성 및 관리, 강의삭제에 관련된 api 기능
 ## ssh에 접속하기 위해 필요한 keypair는 Swift에 저장해둔 뒤 다운로드하여 사용자가 직접 사용하는 방식이므로 다르게 swift.py 파일을 보십시오.
 
-localhost = "http://164.125.70.19"
 
 def accountSettingCMD(personeel: int) -> str:
     result = ''
@@ -22,7 +22,7 @@ def accountSettingCMD(personeel: int) -> str:
 ## HOT라는 기본양식으로 자원의 상세한 설정을 보내줄 수 있으며 이를 통해 자신이 원하는 설정에 따라 자원들의 유기체를 형성합니다. 
 
 def createInstance(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, image: str, vcpus: int, ram: int, disk: int, personeel: int, language: str, creator_id: str):
-    url = localhost + "/heat-api/v1/" + tenant_id + "/stacks"
+    url = localhost() + "/heat-api/v1/" + tenant_id + "/stacks"
 
     rHeaders = {
         'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ def getStackList(X_AUTH_TOKEN: str, tenant_id: str):
         "X-Auth-Token": X_AUTH_TOKEN
     }
 
-    url = localhost + "/heat-api/v1/" + tenant_id + "/stacks"
+    url = localhost() + "/heat-api/v1/" + tenant_id + "/stacks"
 
     requestResult = requests.get(url, headers=rHeaders)
     requestResult.raise_for_status()
@@ -130,7 +130,7 @@ def getStackStatus(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_id:
         "X-Auth-Token": X_AUTH_TOKEN
     }
 
-    url = localhost + "/heat-api/v1/" + tenant_id + "/stacks/" + stack_name + "/" + stack_id
+    url = localhost() + "/heat-api/v1/" + tenant_id + "/stacks/" + stack_name + "/" + stack_id
     requestResult = requests.get(url, headers=rHeaders)
     stack_info = requestResult.json().get("stack", None)
     requestResult.raise_for_status()
@@ -156,7 +156,7 @@ def deleteStack(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_id: st
         "X-Auth-Token": X_AUTH_TOKEN
     }
 
-    url = localhost + "/heat-api/v1/" + tenant_id + "/stacks/" + stack_name + "/" + stack_id
+    url = localhost() + "/heat-api/v1/" + tenant_id + "/stacks/" + stack_name + "/" + stack_id
     requestResult = requests.delete(url, headers=rHeaders)
     requestResult.raise_for_status()
 
@@ -182,7 +182,7 @@ def getStackResources(X_AUTH_TOKEN: str, tenant_id: str, stack_name: str, stack_
         "X-Auth-Token": X_AUTH_TOKEN
     }
 
-    url = localhost + "/heat-api/v1/" + tenant_id + "/stacks/" + stack_name + "/" + stack_id + "/resources"
+    url = localhost() + "/heat-api/v1/" + tenant_id + "/stacks/" + stack_name + "/" + stack_id + "/resources"
     requestResult = requests.get(url, headers=rHeaders)
     requestResult.raise_for_status()
     resources_info = requestResult.json()
