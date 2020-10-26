@@ -12,6 +12,7 @@ import PropTypes from "prop-types";
 import withStyles from "@material-ui/core/styles/withStyles";
 import Button from '@material-ui/core/Button';
 import CreateImage from "components/Dialog/CreateImage.jsx";
+import localhost from "localhost.js";
 
 const styles = {
   cardCategoryWhite: {
@@ -63,7 +64,7 @@ class TableList extends React.Component {
   }
 
   getImageInfo = async() => {
-    fetch("http://164.125.70.19:16384/api/image/table", {
+    fetch(localhost + "/api/image/table", {
       headers: {
         "X-Auth-Token": this.state["X-Auth-Token"]
       }
@@ -93,7 +94,7 @@ class TableList extends React.Component {
       let deletebutton = <Button variant="contained" color="primary" onClick={function(event) {
         event.preventDefault();
 
-        const url = "http://164.125.70.19:16384/api/image/delete";
+        const url = localhost + "/api/image/delete";
 
         const request = {
             method: 'DELETE', 

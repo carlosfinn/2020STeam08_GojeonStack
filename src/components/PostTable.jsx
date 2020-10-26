@@ -38,6 +38,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import PropTypes from "prop-types";
+import localhost from "localhost.js";
 
 import { bugs, website, server } from "variables/general.js";
 
@@ -63,7 +64,7 @@ class PostTable extends React.Component {
   }
 
   fetchPosts() {
-    fetch('http://164.125.70.19:16384/api/board/fetchall', {
+    fetch(localhost + '/api/board/fetchall', {
       method: 'GET'
     }).then((response) => response.json()).then((json) => this.setState({
       thread_list: json

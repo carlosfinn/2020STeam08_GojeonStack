@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Link, Redirect } from 'react-router-dom';
 import Button from '../../styles/Button';
 import palette from '../../styles/palette';
+import localhost from "localhost.js";
 
 
 
@@ -79,7 +80,7 @@ class LoginForm extends Component {
             id: this.state.id,
             pw: this.state.pw
         };
-        fetch("http://164.125.70.19:16384/auth/login",{
+        fetch(localhost + "/auth/login",{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

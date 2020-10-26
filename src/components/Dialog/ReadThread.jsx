@@ -12,7 +12,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
-import fs from 'fs';
+import localhost from "localhost.js";
 
 import { withStyles } from '@material-ui/core/styles';
 //import fileDownload from 'js-file-download';
@@ -57,7 +57,7 @@ class ReadThread extends React.Component {
     }
 
     fetchPost() {
-        const url = 'http://164.125.70.19:16384/api/board/fetchpost';
+        const url = localhost + '/api/board/fetchpost';
 
         const request = {
             method: 'GET', 
@@ -84,7 +84,7 @@ class ReadThread extends React.Component {
     }
 
     deletePost() {
-        const url = 'http://164.125.70.19:16384/api/board/delete';
+        const url = localhost + '/api/board/delete';
 
         const request = {
             method: 'DELETE', 
@@ -104,7 +104,7 @@ class ReadThread extends React.Component {
     }
 
     modifyPost() {
-        const url = 'http://164.125.70.19:16384/api/board/modify';
+        const url = localhost + '/api/board/modify';
 
         console.log("called")
         const request = {
@@ -157,7 +157,7 @@ class ReadThread extends React.Component {
     
     render() {
         const { classes } = this.props;
-        var url = 'http://164.125.70.19:16384/api/board/file?X-Auth-Token=' + this.state["X-Auth-Token"] + 
+        var url = localhost + '/api/board/file?X-Auth-Token=' + this.state["X-Auth-Token"] + 
             '&foldername=' + this.state.foldername + '&student_id=' + this.state.student_id + '&tenant_id=' + this.state.tenant_id + '&filename=' + this.state.filename;
         let deleteButton, editButton;
 

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Link, Redirect } from 'react-router-dom';
 import Button from '../../styles/Button';
 import palette from '../../styles/palette';
+import localhost from "localhost.js";
 
 const AuthFormBlock = styled.div`
     h3 {
@@ -129,7 +130,7 @@ class RegisterForm extends Component {
             email: this.state.email
         };
         if(this.state.pwcheckError === "confirm") {
-            fetch("http://164.125.70.19:16384/auth/register",{
+            fetch(localhost + "/auth/register",{
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

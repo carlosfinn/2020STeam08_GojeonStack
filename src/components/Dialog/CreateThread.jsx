@@ -7,6 +7,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
+import localhost from "localhost.js";
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -52,7 +53,7 @@ class CreateThread extends React.Component {
     }
 
     async createPost() {
-        const url = 'http://164.125.70.19:16384/api/board/thread';
+        const url = localhost + '/api/board/thread';
         const data = new FormData();
         data.append('file', this.uploadInput.files[0]);
 
@@ -79,7 +80,7 @@ class CreateThread extends React.Component {
         const FileInfo = await Response.json();
 
         if (fileexists){    
-            fetch('http://164.125.70.19:16384/api/board/file', {
+            fetch(localhost + '/api/board/file', {
                 method: 'POST', 
                 headers: {
                     "X-Auth-Token": this.state["X-Auth-Token"], 

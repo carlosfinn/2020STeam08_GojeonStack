@@ -7,6 +7,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
+import localhost from "localhost.js";
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -58,7 +59,7 @@ class CreateStack extends React.Component {
     }
 
     getImageInfo() {
-        fetch("http://164.125.70.19:16384/api/image/list", {
+        fetch(localhost + "/api/image/list", {
             method: 'GET', 
             headers: {
                 "X-Auth-Token": this.state["X-Auth-Token"]
@@ -109,7 +110,7 @@ class CreateStack extends React.Component {
     }
 
     createStack() {
-        const url = 'http://164.125.70.19:16384/api/stack/create';
+        const url = localhost + '/api/stack/create';
         const requestBody = {
             stack_name: this.state.stack_name, 
             vcpus: this.state.vcpus, 

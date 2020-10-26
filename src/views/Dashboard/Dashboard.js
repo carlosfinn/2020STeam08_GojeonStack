@@ -34,6 +34,7 @@ import CreateThread from "components/Dialog/CreateThread.jsx";
 import withStyles from "@material-ui/core/styles/withStyles";
 import PostTable from "components/PostTable.jsx";
 import PropTypes from "prop-types";
+import localhost from "localhost.js";
 
 import { bugs, website, server } from "variables/general.js";
 

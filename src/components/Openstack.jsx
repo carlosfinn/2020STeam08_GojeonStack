@@ -30,6 +30,7 @@ import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
 import { bugs, website, server } from "variables/general.js";
 import Button from '@material-ui/core/Button';
+import localhost from "localhost.js";
 
 class StackInfo extends React.Component {
   constructor(props) {
@@ -58,7 +59,7 @@ class StackInfo extends React.Component {
   }
 
   getOwner() {
-    const check_url = "http://164.125.70.19:16384/api/stack/owner";
+    const check_url = localhost + "/api/stack/owner";
     fetch(check_url, {
       method: 'GET', 
       headers: {
@@ -70,7 +71,7 @@ class StackInfo extends React.Component {
   }
 
   getConsoleLink() {
-    const url = "http://164.125.70.19:16384/api/stack/console";
+    const url = localhost + "/api/stack/console";
     const request = {
       method: "POST", 
       headers: {
@@ -87,7 +88,7 @@ class StackInfo extends React.Component {
   }
 
   checkEnrolled() {
-    const check_url = "http://164.125.70.19:16384/api/stack/enrollcheck";
+    const check_url = localhost + "/api/stack/enrollcheck";
     fetch(check_url, {
       method: 'GET', 
       headers: {
@@ -100,7 +101,7 @@ class StackInfo extends React.Component {
   }
 
   enrollStudent = () => {
-    const url = "http://164.125.70.19:16384/api/stack/enrollconsole";
+    const url = localhost + "/api/stack/enrollconsole";
 
     const request = {
       method: "POST", 
@@ -127,7 +128,7 @@ class StackInfo extends React.Component {
   }
 
   DeleteStack() {
-    const url = "http://164.125.70.19:16384/api/stack/delete";
+    const url = localhost + "/api/stack/delete";
     console.log(this.state.stack_id);
     console.log(this.state.stack_name);
 
@@ -152,7 +153,7 @@ class StackInfo extends React.Component {
     let DeleteButton;
     let console;
     let LectureConsole, SSHpermissionfile;
-    var SSHKeyurl = 'http://164.125.70.19:16384/api/stack/sshkey?X-Auth-Token=' + this.state["X-Auth-Token"] + '&stack_name=' + this.state.stack_name + '&tenant_id=' + this.state.tenant_id;
+    var SSHKeyurl = localhost + '/api/stack/sshkey?X-Auth-Token=' + this.state["X-Auth-Token"] + '&stack_name=' + this.state.stack_name + '&tenant_id=' + this.state.tenant_id;
     SSHpermissionfile = <a href={SSHKeyurl}>Get SSH-Authentication Key</a>;
 
     if (isStudent) {
@@ -257,7 +258,7 @@ export default class HeatApi extends React.Component {
   }
 
   getStackInfo = async() => {
-    fetch("http://164.125.70.19:16384/api/stack/list", {
+    fetch(localhost + "/api/stack/list", {
       headers: {
         "X-Auth-Token": this.state["X-Auth-Token"], 
         "tenant_id": this.state.tenant_id

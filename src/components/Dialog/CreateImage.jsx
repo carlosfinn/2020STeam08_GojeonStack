@@ -7,6 +7,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
+import localhost from "localhost.js";
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -55,7 +56,7 @@ class CreateImage extends React.Component {
     }
 
     createImage() {
-        const url = 'http://164.125.70.19:16384/api/image/create';
+        const url = localhost + '/api/image/create';
         const data = new FormData();
         data.append('file', this.uploadInput.files[0]);
 
